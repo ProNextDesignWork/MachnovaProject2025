@@ -1,892 +1,709 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Стоп, выгорание! | Проект Виктории Мачновой</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <style>
-        /* ================================================================
-           1. ОСНОВНЫЕ ПЕРЕМЕННЫЕ (ЦВЕТА И НАСТРОЙКИ)
-           ================================================================
-        */
-        :root {
-            /* Темная тема (основная) */
-            --фон: #010101;
-            --текст: #fcfdfd;
-            --акцент: #e1ff01; /* Лаймовый неон */
-            --стекло: rgba(255, 255, 255, 0.03);
-            --граница-стекла: rgba(255, 255, 255, 0.1);
-            --градиент-сияния: linear-gradient(135deg, #7e998a 0%, #2a313a 50%, #010101 100%);
-            --скорость-анимации: 0.8s;
-            --радиус: 30px;
-        }
+    <title>Graphic Design 2025 | Александр Тулубаев</title>
 
-        .светлая-тема {
-            --фон: #fcfdfd;
-            --текст: #2a313a;
-            --акцент: #5d7a6b;
-            --стекло: rgba(0, 0, 0, 0.03);
-            --граница-стекла: rgba(0, 0, 0, 0.1);
-        }
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- defer external scripts to avoid render-blocking -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-        /* ================================================================
-           2. ГЛОБАЛЬНЫЕ СТИЛИ И СБРОС
-           ================================================================
-        */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-        }
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
 
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--фон);
-            color: var(--текст);
-            overflow-x: hidden;
-            line-height: 1.6;
-            transition: background-color 0.5s ease;
-        }
-
-        /* ================================================================
-           3. ИНТРО (ЗАСТАВКА) - ВАУ ЭФФЕКТ ПРИ ЗАГРУЗКЕ
-           ================================================================
-        */
-        #интро {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .лого-интро {
-            font-size: clamp(2rem, 8vw, 6rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            /* Исправлено: убран сильный сжатый межбуквенный интервал и подобран небольшой положительный spacing,
-               чтобы надпись не выглядела «сжатой», как на телефоне, так и на ПК */
-            letter-spacing: 0.04em;
-            color: transparent;
-            -webkit-text-stroke: 1px var(--акцент);
-            animation: проявление-лого 3s forwards;
-            position: relative;
-            text-align: center;
-            line-height: 1;
-        }
-
-        /* Немного скорректируем для очень маленьких экранов, чтобы не получилось слишком рыхло */
-        @media (max-width: 420px) {
-            .лого-интро { letter-spacing: 0.02em; }
-        }
-
-        @keyframes проявление-лого {
-            0% { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(10px); }
-            50% { opacity: 1; color: transparent; }
-            100% { opacity: 1; color: var(--акцент); transform: scale(1) translateY(0); filter: blur(0); }
-        }
-
-        /* Новая маленькая белая надпись под логотипом */
-        .загрузка-текст {
-            margin-top: 12px;
-            font-size: clamp(0.8rem, 2.5vw, 1rem);
-            font-weight: 500;
-            color: #ffffff; /* белая надпись, будет хорошо читаться на тёмном фоне заставки */
-            opacity: 0;
-            transform: translateY(6px);
-            animation: проявление-загрузки 2.8s forwards;
-            animation-delay: 1.4s; /* появляется вместе/чуть позже после логотипа */
-            text-align: center;
-            letter-spacing: 0.02em;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        @keyframes проявление-загрузки {
-            0% { opacity: 0; transform: translateY(6px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .прогресс-загрузки {
-            width: 200px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            margin-top: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .линия-загрузки {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 0%;
-            background: var(--акцент);
-            animation: прогресс 2.5s ease-in-out forwards;
-        }
-
-        @keyframes прогресс {
-            to { width: 100%; }
-        }
-
-        /* ================================================================
-           4. ЖИВОЙ ФОН (ПОЛЯРНОЕ СИЯНИЕ)
-           ================================================================
-        */
-        .сияние {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .капля {
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, var(--акцент), transparent 60%);
-            filter: blur(120px);
-            opacity: 0.15;
-            animation: движение-сияния 20s infinite alternate linear;
-        }
-
-        @keyframes движение-сияния {
-            0% { transform: translate(-10%, -10%) rotate(0deg); }
-            100% { transform: translate(50%, 30%) rotate(180deg); }
-        }
-
-        /* ================================================================
-           5. НАВИГАЦИЯ И БУРГЕР-МЕНЮ
-           ================================================================
-        */
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 25px 5%;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(to bottom, var(--фон) 0%, transparent 100%);
-            transition: padding 0.3s ease;
-        }
-
-        .логотип {
-            font-weight: 800;
-            font-size: 1.4rem;
-            letter-spacing: -1px;
-            color: var(--текст);
-            text-transform: uppercase;
-            text-decoration: none;
-        }
-
-        .меню-десктоп {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .ссылка-меню {
-            text-decoration: none;
-            color: var(--текст);
-            font-size: 0.9rem;
-            font-weight: 500;
-            opacity: 0.6;
-            transition: 0.3s;
-        }
-
-        .ссылка-меню:hover {
-            opacity: 1;
-            color: var(--акцент);
-        }
-
-        /* Бургер */
-        .бургер-кнопка {
-            display: none;
-            flex-direction: column;
-            gap: 6px;
-            cursor: pointer;
-            z-index: 1002;
-            padding: 10px;
-        }
-
-        .линия-бургера {
-            width: 25px;
-            height: 2px;
-            background: var(--текст);
-            transition: 0.3s;
-        }
-
-        .бургер-меню-мобильное {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            height: 100vh;
-            background: var(--фон);
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            transition: 0.6s cubic-bezier(0.85, 0, 0.15, 1);
-        }
-
-        .бургер-меню-мобильное.активно {
-            right: 0;
-        }
-
-        .бургер-меню-мобильное a {
-            font-size: 2rem;
-            font-weight: 900;
-            text-decoration: none;
-            color: var(--текст);
-        }
-
-        /* ================================================================
-           6. ОСНОВНЫЕ СЕКЦИИ (HERO И КОНТЕНТ)
-           ================================================================
-        */
-        main {
-            padding-top: 100px;
-        }
-
-        .главный-экран {
-            height: calc(100vh - 100px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 5%;
-        }
-
-        .заголовок-гигант {
-            font-size: clamp(3rem, 15vw, 12rem);
-            font-weight: 900;
-            line-height: 0.85;
-            letter-spacing: -5px;
-            margin-bottom: 30px;
-        }
-
-        .акцентное-слово {
-            color: var(--акцент);
-            display: block;
-        }
-
-        .описание-проекта {
-            max-width: 600px;
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            opacity: 0.7;
-            margin-top: 20px;
-        }
-
-        section {
-            padding: 80px 5%;
-            opacity: 0;
-            transform: translateY(40px);
-            transition: 1s ease-out;
-        }
-
-        section.активна {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .название-секции {
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: 800;
-            margin-bottom: 50px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .название-секции::after {
-            content: "";
-            flex-grow: 1;
-            height: 1px;
-            background: var(--граница-стекла);
-        }
-
-        /* ================================================================
-           7. ПАСПОРТ И ТЕОРИЯ (ИЗ ФАЙЛА)
-           ================================================================
-        */
-        .карточка-стекло {
-            background: var(--стекло);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--граница-стекла);
-            border-radius: var(--радиус);
-            padding: clamp(20px, 5vw, 50px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-
-        .сетка-паспорта {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .элемент-паспорта {
-            padding: 20px;
-            border-bottom: 1px solid var(--граница-стекла);
-        }
-
-        .метка {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--акцент);
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .значение {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .блок-теории {
-            margin-bottom: 40px;
-        }
-
-        .блок-теории h3 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: var(--акцент);
-        }
-
-        .список {
-            list-style: none;
-            margin-top: 15px;
-        }
-
-        .список li {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 12px;
-        }
-
-        .список li::before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: var(--акцент);
-        }
-
-        /* ================================================================
-           8. ТЕСТЫ И АНКЕТИРОВАНИЕ
-           ================================================================
-        */
-        /* === ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ .кнопка-теста ===
-           Чтобы <a class="кнопка-теста"> выглядела и вела себя как кнопка на мобильных.
-           (display, text-decoration, appearance, padding, адаптивный padding для small screens)
-        */
-        .кнопка-теста {
-            display: inline-flex;             /* важно для корректного рендеринга на mobile */
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;           /* убрать подчёркивание у <a> */
-            -webkit-appearance: none;        /* убрать нативный стиль на iOS/Android */
-            appearance: none;
-            padding: 18px 35px;              /* удобная кнопка (сохранил прежние отступы) */
-            border-radius: 50px;             /* как было раньше */
-            background: var(--акцент);
-            color: #000;
-            border: none;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            line-height: 1;
-            vertical-align: middle;
-            transition: transform 0.12s ease, box-shadow 0.12s ease;
-        }
-
-        .кнопка-теста:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(225,255,1,0.15);
-        }
-        .кнопка-теста:active { transform: translateY(0); }
-        .кнопка-теста:focus { outline: 3px solid rgba(225,255,1,0.12); outline-offset: 3px; }
-
-        /* Подгонка для мобильных: чуть меньше padding, чтобы текст не переносился */
-        @media (max-width: 420px) {
-            .кнопка-теста {
-                padding: 12px 20px;
-                font-size: 0.95rem;
-                border-radius: 14px;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        dark: '#050505',
+                        accent: '#3b82f6',
+                        purple: '#8b5cf6'
+                    }
+                }
             }
         }
+    </script>
 
-        .варианты-ответов {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; }
+        body.menu-open { overflow: hidden; } 
+
+        .bg-gradient-mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #111, #050505);
+        }
+        .blob {
+            position: absolute; width: 600px; height: 600px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            filter: blur(140px); border-radius: 50%; opacity: 0.12;
+            animation: move 25s infinite alternate;
+        }
+        @keyframes move {
+            from { transform: translate(-15%, -15%) scale(1); }
+            to { transform: translate(25%, 25%) scale(1.3); }
         }
 
-        .вариант {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--граница-стекла);
-            padding: 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-            text-align: left;
+        #intro-overlay { position: fixed; inset: 0; background: #000; z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .quiz-btn { transition: all 0.3s ease; }
+        .quiz-btn.correct { background-color: #10b981 !important; color: white; border-color: #10b981; }
+        .quiz-btn.wrong { background-color: #ef4444 !important; color: white; border-color: #ef4444; }
+
+        /* --- Бургер-кнопка --- */
+        #burger-btn { z-index: 60; position: relative; } 
+        .burger-line {
+            display: block; width: 24px; height: 2px;
+            background-color: white; margin: 5px auto;
+            transition: transform 0.45s cubic-bezier(.2,.8,.2,1), opacity 0.35s;
+            will-change: transform, opacity;
+        }
+        #burger-btn.active .burger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        #burger-btn.active .burger-line:nth-child(2) { opacity: 0; transform: translateX(10px); }
+        #burger-btn.active .burger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* --- Мобильное меню --- */
+        #menu-backdrop {
+            position: fixed; inset: 0; z-index: 49;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+            will-change: opacity;
         }
 
-        .вариант:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: var(--акцент);
+        #mobile-menu {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 80%; max-width: 400px;
+            background: #0a0a0a;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 50;
+            display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+            transform: translateX(100%);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            will-change: transform;
         }
 
-        /* Графики */
-        .контейнер-статистики {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            height: 300px;
-            margin-top: 50px;
-            padding-bottom: 40px;
-            border-bottom: 1px solid var(--граница-стекла);
-            gap: 10px;
+        /* Добавим небольшую подкрутку для меню ссылок */
+        .menu-link { will-change: transform, opacity; }
+
+        /* prefers-reduced-motion поддержка */
+        @media (prefers-reduced-motion: reduce) {
+          * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
         }
 
-        .столбец {
-            flex: 1;
-            background: var(--акцент);
-            border-radius: 10px 10px 0 0;
-            position: relative;
-            transition: height 1s ease-out;
-            min-width: 40px;
-        }
-
-        .столбец::after {
-            content: attr(data-label);
-            position: absolute;
-            bottom: -35px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.7rem;
-            white-space: nowrap;
-            opacity: 0.8;
-        }
-
-        .значение-процента {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-weight: 800;
-            color: var(--акцент);
-        }
-
-        /* ================================================================
-           9. АДАПТИВНОСТЬ ПОД РАЗНЫЕ УСТРОЙСТВА
-           ================================================================
-        */
-        @media (max-width: 1024px) {
-            .заголовок-гигант { letter-spacing: -2px; }
-        }
-
-        @media (max-width: 768px) {
-            header { padding: 15px 5%; }
-            .меню-десктоп { display: none; }
-            .бургер-кнопка { display: flex; }
-            .заголовок-гигант { line-height: 1; }
-            .главный-экран { height: auto; padding-top: 50px; }
-            section { padding: 40px 5%; }
-            .сетка-паспорта { grid-template-columns: 1fr; }
-            .контейнер-статистики { height: 200px; gap: 5px; }
-            /* Убедимся, что подпись на заставке читаема и не занимает лишнего места на мобильных экранах */
-            .загрузка-текст { margin-top: 8px; }
-        }
-
-        /* ================================================================
-           10. ФУТЕР И ПРОЧЕЕ
-           ================================================================
-        */
-        footer {
-            padding: 50px 5%;
-            text-align: center;
-            border-top: 1px solid var(--граница-стекла);
-            opacity: 0.5;
-            font-size: 0.9rem;
+        /* уменьшение blur на мобильных устройствах для производительности */
+        @media (max-width: 640px) {
+          .blob { filter: blur(40px); opacity: 0.08; animation: none; }
+          #menu-backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
         }
     </style>
 </head>
-<body>
+<body class="antialiased font-sans">
 
-    <div id="интро">
-        <div class="лого-интро">СТОП ВЫГОРАНИЕ</div>
-        <!-- Новая белая подпись под логотипом, видимая на ПК и телефоне -->
-        <div class="загрузка-текст">Идёт загрузка...</div>
-
-        <div class="прогресс-загрузки">
-            <div class="линия-загрузки"></div>
+    <div id="intro-overlay" aria-hidden="false">
+        <div class="text-center px-6">
+            <h2 class="intro-item text-4xl md:text-6xl font-black tracking-tighter opacity-0 scale-90">
+                Проект <span class="text-accent italic">2025</span>
+            </h2>
+            <p class="intro-item text-white/70 mt-2 text-lg md:text-xl opacity-0 scale-90 transition-all duration-700">
+                Графический дизайн в современном мире
+            </p>
+            <div id="intro-bar" class="w-0 h-px bg-accent mt-4 mx-auto"></div>
         </div>
-        <p style="margin-top: 20px; color: var(--акцент); font-weight: 500;">9Б Класс</p>
     </div>
 
-    <div class="сияние">
-        <div class="капля"></div>
+    <div class="bg-gradient-mesh" aria-hidden="true">
+        <div class="blob" style="top: -10%; left: -10%;"></div>
+        <div class="blob" style="bottom: -10%; right: -10%; animation-delay: -7s; background: #8b5cf6;"></div>
     </div>
 
-    <header id="шапка">
-        <a href="#" class="логотип">Стоп, выгорание!</a>
-        <div class="меню-десктоп">
-            <a href="#паспорт" class="ссылка-меню">Паспорт</a>
-            <a href="#теория" class="ссылка-меню">Теория</a>
-            <a href="#тест" class="ссылка-меню">Тест</a>
-            <a href="#анкета" class="ссылка-меню">Исследование</a>
-            <a href="#скачать" class="ссылка-меню">Материалы</a>
-            <button class="кнопка-теста" style="padding: 10px 20px; font-size: 0.8rem;" onclick="toggleTheme()">🌓 Тема</button>
+    <nav class="fixed w-full z-40 top-0 bg-dark/50 backdrop-blur-lg border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="font-black text-xl md:text-2xl tracking-tighter uppercase">ProNext.<span class="text-accent">Design</span></div>
+
+            <div class="hidden md:flex gap-8 text-[10px] uppercase tracking-[0.3em] font-bold opacity-60">
+                <a href="#passport" class="hover:text-accent transition">Проект</a>
+                <a href="#analytics" class="hover:text-accent transition">Аналитика</a>
+                <a href="#theory" class="hover:text-accent transition">База</a>
+                <a href="#tools" class="hover:text-accent transition">Инструменты</a>
+                <a href="#quiz" class="hover:text-accent transition">Тест</a>
+                <a href="https://t.me/PhBlgolcat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition">Больше проектов</a>
+            </div>
+
+            <button id="burger-btn" class="block md:hidden focus:outline-none" aria-label="Открыть меню" aria-controls="mobile-menu" aria-expanded="false" type="button">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </button>
         </div>
-        <div class="бургер-кнопка" onclick="toggleMenu()">
-            <div class="линия-бургера"></div>
-            <div class="линия-бургера"></div>
-            <div class="линия-бургера"></div>
+    </nav>
+
+    <div id="menu-backdrop" aria-hidden="true"></div>
+
+    <div id="mobile-menu" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1">
+        <div class="absolute top-0 right-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
+             <div class="absolute top-[-20%] right-[-50%] w-[300px] h-[300px] rounded-full bg-accent blur-[80px]"></div>
+        </div>
+
+        <div class="absolute top-8 left-8 z-20 menu-back opacity-0">
+            <button class="group flex items-center gap-3 text-white/50 hover:text-white transition-colors duration-300" type="button">
+                <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span class="text-[10px] uppercase font-black tracking-[0.2em]">Назад</span>
+            </button>
+        </div>
+
+        <nav class="relative z-10 flex flex-col items-start w-full px-12 gap-8 text-2xl font-black uppercase tracking-widest mt-10">
+            <p class="text-[10px] text-gray-500 mb-2 tracking-[0.2em]">Навигация</p>
+            <a href="#passport" class="menu-link opacity-0 transform translate-x-10 hover:text-accent transition">Проект</a>
+            <a href="#analytics" class="menu-link opacity-0 transform translate-x-10 hover:text-accent transition">Аналитика</a>
+            <a href="#theory" class="menu-link opacity-0 transform translate-x-10 hover:text-accent transition">База</a>
+            <a href="#tools" class="menu-link opacity-0 transform translate-x-10 hover:text-accent transition">Инструменты</a>
+            <a href="#quiz" class="menu-link opacity-0 transform translate-x-10 hover:text-accent transition">Тест</a>
+            <a href="https://t.me/PhBlgolcat" target="_blank" rel="noopener noreferrer" class="menu-link opacity-0 transform translate-x-10 hover:text-accent transition text-accent">Больше проектов</a>
+        </nav>
+
+        <div class="absolute bottom-12 w-full px-12 opacity-0 menu-footer">
+             <p class="text-[8px] uppercase text-gray-600 tracking-widest">Design Project 2025</p>
+        </div>
+    </div>
+
+    <header class="h-screen flex items-center justify-center px-6 relative">
+        <div class="text-center z-10">
+            <p class="text-accent font-bold tracking-[0.5em] text-[10px] md:text-xs mb-6 uppercase hero-reveal">Школьный проект</p>
+            <h1 class="text-4xl md:text-8xl font-black mb-8 leading-none hero-reveal">
+                Графический дизайн <br>
+                <span class="font-serif italic font-light text-white/90 text-3xl md:text-7xl">в современном мире</span>
+            </h1>
+            <div class="max-w-xl mx-auto mb-12 opacity-60 hero-reveal text-sm md:text-base">
+                <p>Роль, тренды и практическое применение визуального языка в цифровую эпохе.</p>
+            </div>
+            <div class="flex flex-col md:flex-row justify-center gap-6 md:gap-12 hero-reveal opacity-80">
+                <div class="text-center md:text-left">
+                    <span class="block text-[10px] uppercase mb-1 text-accent">Выполнил</span>
+                    <span class="font-bold">Александр Тулубаев</span>
+                </div>
+                <div class="text-center md:text-left border-t md:border-t-0 md:border-l border-white/20 pt-4 md:pt-0 md:pl-12">
+                    <span class="block text-[10px] uppercase mb-1 text-purple">Руководитель</span>
+                    <span class="font-bold">Бурау А.Б.</span>
+                </div>
+            </div>
         </div>
     </header>
 
-    <div class="бургер-меню-мобильное" id="мобМеню">
-        <a href="#паспорт" onclick="toggleMenu()">Паспорт</a>
-        <a href="#теория" onclick="toggleMenu()">Теория</a>
-        <a href="#тест" onclick="toggleMenu()">Тест</a>
-        <a href="#анкета" onclick="toggleMenu()">Исследование</a>
-        <a href="#скачать" onclick="toggleMenu()">Материалы</a>
-        <button class="кнопка-теста" onclick="toggleTheme()">Сменить тему</button>
-    </div>
+    <section id="passport" class="py-16 md:py-32 px-6 overflow-hidden">
+        <div class="max-w-6xl mx-auto relative">
+            <span class="text-7xl md:text-9xl font-black opacity-5 absolute -top-10 -left-4 md:-mt-20">01</span>
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 md:mb-16 tracking-tight reveal">Паспорт проекта</h2>
 
-    <main>
-        <section class="главный-экран активна">
-            <h1 class="заголовок-гигант">
-                БЕРЕГИ<br>
-                <span class="акцентное-слово">СЕБЯ</span>
-            </h1>
-            <p class="описание-проекта">
-                Эмоциональное выгорание у подростков — это реальная проблема. Исследуем причины, ищем пути решения и поддерживаем друг друга. Проект Виктории Мачновой.
-            </p>
-            <div style="margin-top: 40px;">
-                <a href="#тест" class="кнопка-теста">Начать исследование</a>
-            </div>
-        </section>
-
-        <section id="паспорт">
-            <h2 class="название-секции">Паспорт проекта</h2>
-            <div class="карточка-стекло">
-                <div class="сетка-паспорта">
-                    <div class="элемент-паспорта">
-                        <span class="метка">Тема</span>
-                        <div class="значение">Эмоциональное выгорание у подростков на фоне стресса в школе и дома</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+                <div class="space-y-8 reveal">
+                    <div>
+                        <h3 class="text-accent font-bold uppercase text-xs tracking-widest mb-4">Цель</h3>
+                        <p class="text-lg md:text-xl text-gray-300 leading-relaxed">
+                            Изучить современные направления графического дизайна и разработать комплекс образовательных материалов (сайт и буклет) для повышения визуальной грамотности.
+                        </p>
                     </div>
-                    <div class="элемент-паспорта">
-                        <span class="метка">Цель</span>
-                        <div class="значение">Разработать цифровой ресурс (сайт) и материалы для профилактики выгорания</div>
-                    </div>
-                    <div class="элемент-паспорта">
-                        <span class="метка">Автор</span>
-                        <div class="значение">Мачнова Виктория, 9Б класс</div>
-                    </div>
-                    <div class="элемент-паспорта">
-                        <span class="метка">Руководитель</span>
-                        <div class="значение">Ельцова Елена Владимировна</div>
-                    </div>
-                    <div class="элемент-паспорта">
-                        <span class="метка">Актуальность</span>
-                        <div class="значение">Подготовка к ОГЭ и давление среды вызывают сильный стресс </div>
-                    </div>
-                    <div class="элемент-паспорта">
-                        <span class="метка">Место</span>
-                        <div class="значение">МБОУ «Змеиногорская СОШ с УИОП»</div>
+                    <div>
+                        <h3 class="text-purple font-bold uppercase text-xs tracking-widest mb-4">Задачи</h3>
+                        <ul class="text-sm text-gray-400 space-y-3">
+                            <li class="flex items-start gap-2"><span>—</span> Изучение истории и трендов дизайна.</li>
+                            <li class="flex items-start gap-2"><span>—</span> Сравнительный анализ редакторов и нейросетей.</li>
+                            <li class="flex items-start gap-2"><span>—</span> Создание структуры и контента для сайта.</li>
+                            <li class="flex items-start gap-2"><span>—</span> Разработка и печать информационного буклета.</li>
+                        </ul>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <section id="теория">
-            <h2 class="название-секции">Теоретический материал</h2>
-            <div class="карточка-стекло">
-                <div class="блок-теории">
-                    <h3>Что такое выгорание?</h3>
-                    <p>Синдром эмоционального выгорания (СЭВ) — это состояние умственного, физического или эмоционального истощения. Это защитная реакция организма на длительный стресс.</p>
-                </div>
-                
-                <div class="блок-теории">
-                    <h3>Почему это случается с подростками?</h3>
-                    <p>Подростки часто испытывают сильный стресс от учебных нагрузок, особенно в период подготовки к ОГЭ, а также от давления со стороны окружения.</p>
-                    <ul class="список">
-                        <li>Завышенные требования к себе и страх неудачи.</li>
-                        <li>Нарушение режима сна и питания.</li>
-                        <li>Отсутствие качественного отдыха без гаджетов.</li>
-                    </ul>
-                </div>
-
-                <div class="блок-теории">
-                    <h3>Основные задачи профилактики</h3>
-                    <p>Для борьбы с выгоранием важно систематизировать эффективные методики и использовать психологическую поддержку.</p>
-                    <ul class="список">
-                        <li>Изучение техник тайм-менеджмента для снижения нагрузки.</li>
-                        <li>Регулярное анонимное анкетирование для выявления проблем.</li>
-                        <li>Использование «Телефона доверия» в критических ситуациях.</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section id="тест">
-            <h2 class="название-секции">Экспресс-тест</h2>
-            <div class="карточка-стекло" id="контейнер-теста-1" style="text-align: center;">
-                <h3 id="вопрос-теста-1" style="margin-bottom: 30px; font-size: 1.5rem;">Готовы проверить свой уровень выгорания?</h3>
-                <div id="ответы-теста-1" class="варианты-ответов">
-                    <button class="кнопка-теста" onclick="начатьТест1()">Начать тест</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="анкета">
-            <h2 class="название-секции">Исследование 9Б</h2>
-            <div class="сетка-паспорта">
-                <div class="карточка-стекло">
-                    <h3 style="margin-bottom: 20px;">Ваше мнение</h3>
-                    <div id="контейнер-анкеты">
-                        <p id="текст-анкеты">Пройдите опрос, чтобы увидеть статистику источников стресса в нашем классе.</p>
-                        <div id="ответы-анкеты" class="варианты-ответов">
-                            <button class="кнопка-теста" onclick="начатьАнкету()">Участвовать</button>
+                <div class="glass p-6 md:p-8 rounded-[2rem] reveal">
+                    <h3 class="text-xs font-bold uppercase tracking-widest mb-8 opacity-50 text-center">График реализации</h3>
+                    <div class="space-y-6">
+                        <div class="flex gap-4 border-l-2 border-accent pl-4">
+                            <div class="text-xs font-bold text-accent min-w-[60px]">Октябрь</div>
+                            <div class="text-xs opacity-70">Изучение статей и трендов дизайна.</div>
+                        </div>
+                        <div class="flex gap-4 border-l-2 border-purple pl-4">
+                            <div class="text-xs font-bold text-purple min-w-[60px]">Ноябрь</div>
+                            <div class="text-xs opacity-70">Анализ портфолио и правил типографики.</div>
+                        </div>
+                        <div class="flex gap-4 border-l-2 border-white pl-4">
+                            <div class="text-xs font-bold min-w-[60px]">Дек-Янв</div>
+                            <div class="text-xs opacity-70">Техническая разработка сайта и буклета.</div>
+                        </div>
+                        <div class="flex gap-4 border-l-2 border-accent pl-4">
+                            <div class="text-xs font-bold text-accent min-w-[60px]">Январь</div>
+                            <div class="text-xs opacity-70">Печать буклета и защита проекта.</div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="карточка-стекло" id="результаты-статистики">
-                    <h3 style="margin-bottom: 20px;">Источники стресса (Статистика)</h3>
-                    <div class="контейнер-статистики" id="график">
-                        <div class="столбец" style="height: 75%;" data-label="Учеба"><span class="значение-процента">75%</span></div>
-                        <div class="столбец" style="height: 40%;" data-label="Семья"><span class="значение-процента">40%</span></div>
-                        <div class="столбец" style="height: 60%;" data-label="Экзамены"><span class="значение-процента">60%</span></div>
-                        <div class="столбец" style="height: 25%;" data-label="Соцсети"><span class="значение-процента">25%</span></div>
-                    </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="analytics" class="py-16 md:py-32 bg-white text-black">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl md:text-6xl font-black mb-12 md:mb-20 tracking-tighter uppercase text-center">Аналитика</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 text-center">
+                <div>
+                    <div class="text-5xl md:text-6xl font-black italic mb-2">94%</div>
+                    <p class="font-bold uppercase text-[10px] tracking-widest text-accent">Доверие</p>
+                    <p class="mt-4 text-xs text-gray-500">Пользователей оценивают надежность бренда по дизайну.</p>
+                </div>
+                <div>
+                    <div class="text-5xl md:text-6xl font-black italic mb-2">60к</div>
+                    <p class="font-bold uppercase text-[10px] tracking-widest text-accent">Мозг</p>
+                    <p class="mt-4 text-xs text-gray-500">В столько раз быстрее мы воспринимаем образ, чем текст.</p>
+                </div>
+                <div>
+                    <div class="text-5xl md:text-6xl font-black italic mb-2">80%</div>
+                    <p class="font-bold uppercase text-[10px] tracking-widest text-accent">Узнаваемость</p>
+                    <p class="mt-4 text-xs text-gray-500">Цвет увеличивает узнаваемость бренда на рынке.</p>
+                </div>
+                <div>
+                    <div class="text-5xl md:text-6xl font-black italic mb-2">73%</div>
+                    <p class="font-bold uppercase text-[10px] tracking-widest text-accent">AI Влияние</p>
+                    <p class="mt-4 text-xs text-gray-500">Профи используют нейросети для ускорения работы.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="скачать">
-            <h2 class="название-секции">Материалы</h2>
-            <div class="карточка-стекло" style="display: flex; flex-wrap: wrap; gap: 40px; align-items: center;">
-                <div style="flex: 1; min-width: 280px;">
-                    <h3>Информационный буклет</h3>
-                    <p style="margin: 20px 0;">Скачайте буклет «Стоп, выгорание!» с практическими упражнениями и рекомендациями.</p>
-                    <!-- Ссылка заменена на Google Drive direct-download -->
-                    <a class="кнопка-теста"
-                       href="https://drive.google.com/uc?export=download&id=1mIPIA5_BRlJVb_7TyNTDmapQ35doCfkJ"
-                       target="_blank"
-                       rel="noopener">
-                       Скачать буклет (PDF)
-                    </a>
+    <section id="theory" class="py-16 md:py-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-2xl md:text-3xl font-bold mb-12 md:mb-16 uppercase tracking-widest reveal">Основы дизайна</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 reveal">
+                <div class="p-8 md:p-10 glass rounded-[2.5rem] md:rounded-[3rem] hover:bg-white/5 transition">
+                    <h3 class="text-2xl font-serif italic text-accent mb-4">Колористика</h3>
+                    <p class="text-sm text-gray-400">Изучение цветового круга Иттена и психологии восприятия позволяет создавать гармоничные и эффективные интерфейсы.</p>
                 </div>
-                <div style="background: #fff; padding: 20px; border-radius: 20px; display: flex; flex-direction: column; align-items: center;">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://pronextdesignwork.github.io/MachnovaProject2025/" alt="QR">
-                    <p style="color: #000; font-size: 0.8rem; margin-top: 10px; font-weight: 700;">QR-код сайта</p>
+                <div class="p-8 md:p-10 glass rounded-[2.5rem] md:rounded-[3rem] hover:bg-white/5 transition">
+                    <h3 class="text-2xl font-serif italic text-purple mb-4">Типографика</h3>
+                    <p class="text-sm text-gray-400">Шрифт передает характер. Правильная иерархия заголовков и выбор гарнитур — залог читабельности любого продукта.</p>
+                </div>
+                <div class="p-8 md:p-10 glass rounded-[2.5rem] md:rounded-[3rem] hover:bg-white/5 transition">
+                    <h3 class="text-2xl font-serif italic text-white mb-4">Композиция</h3>
+                    <p class="text-sm text-gray-400">Правило третей и использование «воздуха» помогают структурировать контент и управлять взглядом пользователя.</p>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <footer>
-        <p>© 2025 Мачнова Виктория. Змеиногорская СОШ с УИОП.</p>
-        <p>Используемые нейросети: Gemini.</p>
+    <section id="tools" class="py-16 md:py-32 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black mb-12 md:mb-16 text-center reveal uppercase">Инструментарий</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 reveal">
+                <div class="p-6 md:p-8 border border-white/10 rounded-3xl">
+                    <h4 class="text-accent font-bold mb-6 uppercase tracking-widest text-xs">Графическое ПО</h4>
+                    <ul class="space-y-4 text-sm opacity-60">
+                        <li class="flex justify-between border-b border-white/5 pb-2"><span>Figma</span> <span>UX/UI Дизайн</span></li>
+                        <li class="flex justify-between border-b border-white/5 pb-2"><span>Adobe Illustrator</span> <span>Векторная графика</span></li>
+                        <li class="flex justify-between border-b border-white/5 pb-2"><span>Adobe Photoshop</span> <span>Работа с фото</span></li>
+                    </ul>
+                </div>
+                <div class="p-6 md:p-8 border border-white/10 rounded-3xl bg-accent/5">
+                    <h4 class="text-purple font-bold mb-6 uppercase tracking-widest text-xs">Искусственный Интеллект</h4>
+                    <ul class="space-y-4 text-sm opacity-60">
+                        <li class="flex justify-between border-b border-white/5 pb-2"><span>Midjourney</span> <span>Генерация артов</span></li>
+                        <li class="flex justify-between border-b border-white/5 pb-2"><span>Gemini / ChatGPT</span> <span>Контент-план</span></li>
+                        <li class="flex justify-between border-b border-white/5 pb-2"><span>Adobe Firefly</span> <span>AI-ретушь</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="quiz" class="py-16 md:py-32 px-6">
+        <div class="max-w-2xl mx-auto glass p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem]">
+            <h2 class="text-2xl md:text-3xl font-bold mb-2 text-center uppercase italic">Проверь себя</h2>
+            <p class="text-center text-[10px] text-gray-500 mb-10 uppercase tracking-widest">5 вопросов по теории дизайна</p>
+
+            <div id="quiz-box">
+                <div id="q-content">
+                    <h3 id="q-title" class="text-lg md:text-xl font-bold mb-8 text-center min-h-[60px]">Загрузка...</h3>
+                    <div id="q-options" class="grid grid-cols-1 gap-4"></div>
+                </div>
+
+                <div id="q-result" class="hidden text-center space-y-6">
+                    <div id="res-score" class="text-6xl md:text-7xl font-black text-accent italic">0/5</div>
+                    <p id="res-text" class="text-gray-400 font-medium text-sm"></p>
+                    <button id="quiz-restart" type="button" class="px-8 py-3 bg-white text-black font-bold rounded-full uppercase text-[10px] tracking-widest hover:bg-accent transition">Пройти снова</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="share" class="py-16 md:py-32 px-6 bg-accent text-dark">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-8xl font-black uppercase mb-8 md:mb-12 italic leading-none reveal">Share Project</h2>
+            <div class="inline-block p-4 bg-white rounded-[2rem] md:rounded-[2.5rem] mb-10 shadow-2xl reveal">
+                <img loading="lazy" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://sahoktulub-cloud.github.io/ProjectGraphicDesign/&color=050505" alt="QR Code" class="w-32 h-32 md:w-48 md:h-48">
+            </div>
+            <p class="text-[10px] md:text-sm font-bold uppercase tracking-[0.3em] mb-12">Сканируй для перехода на проект</p>
+
+            <div class="flex justify-center gap-6">
+                <a href="https://drive.google.com/uc?export=download&id=1QXROIs0vowzRraYFztIbBvouvbnV9e3P" class="px-8 py-3 border-2 border-dark font-black text-[10px] uppercase hover:bg-dark hover:text-white transition inline-block text-center" target="_blank" rel="noopener noreferrer">
+                    Скачать буклет
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 text-center text-[8px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.5em] opacity-30 px-6">
+        МБОУ «Змеиногорская СОШ с УИОП» • 2025 • Тулубаев Александр
     </footer>
 
     <script>
-        // 1. ЛОГИКА ИНТРО (Убираем заставку)
-        // Переписано: используем DOMContentLoaded и защиту от null, чтобы заставка
-        // не зависала если элемент не найден или если onload не срабатывает.
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                const intro = document.getElementById('интро');
-                if (!intro) return; // если нет элемента — просто выходим
+    // Ensure GSAP is available (deferred scripts should have loaded by DOMContentLoaded)
+    (function () {
+        // small helper to query safely
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => Array.from(document.querySelectorAll(s));
 
-                // показываем анимацию убирания спустя небольшую паузу
+        function onReady(fn) {
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                setTimeout(fn, 0);
+            } else {
+                document.addEventListener('DOMContentLoaded', fn);
+            }
+        }
+
+        onReady(() => {
+            // register plugin if gsap exists
+            if (window.gsap && window.gsap.registerPlugin && window.ScrollTrigger) {
+                gsap.registerPlugin(ScrollTrigger);
+            }
+
+            const burgerBtn = $('#burger-btn');
+            const mobileMenu = $('#mobile-menu');
+            const menuBackdrop = $('#menu-backdrop');
+            const menuLinks = $$('.menu-link');
+            const menuFooter = document.querySelector('.menu-footer');
+            const menuBack = document.querySelector('.menu-back'); // контейнер "Назад"
+            const menuBackBtn = menuBack ? menuBack.querySelector('button') : null;
+            let isMenuOpen = false;
+
+            // Accessibility helpers
+            const FOCUSABLE_SELECTORS = 'a[href], button:not([disabled]), textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select';
+            function getFocusable(el) {
+                if (!el) return [];
+                return Array.from(el.querySelectorAll(FOCUSABLE_SELECTORS)).filter(i => i.offsetParent !== null);
+            }
+
+            // Build menu timeline only if GSAP available
+            let menuTl = null;
+            if (window.gsap) {
+                menuTl = gsap.timeline({ paused: true, reversed: true });
+
+                if (menuBackdrop) menuTl.fromTo(menuBackdrop, { autoAlpha: 0, visibility: 'hidden' }, { autoAlpha: 1, visibility: 'visible', duration: 0.35, ease: "power2.out" });
+                if (mobileMenu) menuTl.fromTo(mobileMenu, { x: "100%" }, { x: "0%", duration: 0.5, ease: "power4.out" }, "-=0.2");
+                if (menuBack) menuTl.fromTo(menuBack, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.36 }, "-=0.35");
+                if (menuLinks && menuLinks.length) menuTl.fromTo(menuLinks, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.45, stagger: 0.08, ease: "back.out(1.2)" }, "-=0.3");
+                if (menuFooter) menuTl.fromTo(menuFooter, { opacity: 0 }, { opacity: 0.6, duration: 0.35 }, "-=0.25");
+            }
+
+            // Functions to update aria states
+            function setMenuAria(open) {
+                if (burgerBtn) burgerBtn.setAttribute('aria-expanded', String(open));
+                if (mobileMenu) mobileMenu.setAttribute('aria-hidden', String(!open));
+                if (menuBackdrop) menuBackdrop.setAttribute('aria-hidden', String(!open));
+            }
+
+            // Focus trap variables
+            let trappedElements = [];
+            let currentFocusIndex = 0;
+            let trapKeyHandler = null;
+
+            function enableFocusTrap(container) {
+                trappedElements = getFocusable(container);
+                if (trappedElements.length) {
+                    currentFocusIndex = 0;
+                    trappedElements[0].focus();
+                }
+                trapKeyHandler = function(e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        if (trappedElements.length === 0) return;
+                        if (e.shiftKey) {
+                            currentFocusIndex = (currentFocusIndex - 1 + trappedElements.length) % trappedElements.length;
+                        } else {
+                            currentFocusIndex = (currentFocusIndex + 1) % trappedElements.length;
+                        }
+                        trappedElements[currentFocusIndex].focus();
+                    } else if (e.key === 'Escape') {
+                        // close menu on Esc
+                        if (isMenuOpen) closeMenu();
+                    }
+                };
+                document.addEventListener('keydown', trapKeyHandler);
+            }
+
+            function disableFocusTrap() {
+                if (trapKeyHandler) {
+                    document.removeEventListener('keydown', trapKeyHandler);
+                    trapKeyHandler = null;
+                }
+                trappedElements = [];
+            }
+
+            function openMenu() {
+                if (!menuTl) {
+                    // fallback simple show
+                    if (menuBackdrop) { menuBackdrop.style.opacity = '1'; menuBackdrop.style.visibility = 'visible'; }
+                    if (mobileMenu) mobileMenu.style.transform = 'translateX(0%)';
+                    burgerBtn.classList.add('active');
+                    document.body.classList.add('menu-open');
+                    setMenuAria(true);
+                    isMenuOpen = true;
+                    enableFocusTrap(mobileMenu);
+                    return;
+                }
+                menuTl.eventCallback('onReverseComplete', null);
+                burgerBtn.classList.add('active');
+                document.body.classList.add('menu-open');
+                setMenuAria(true);
+                menuTl.timeScale(1);
+                menuTl.play();
+                isMenuOpen = true;
+                // set focus after a short delay to allow menu to appear for non-reduced-motion users
                 setTimeout(() => {
-                    intro.style.transition = '1s cubic-bezier(0.85, 0, 0.15, 1)';
-                    intro.style.transform = 'translateY(-100%)';
-                    setTimeout(() => intro.style.display = 'none', 1000);
-                }, 2500);
-            } catch (err) {
-                // любая ошибка здесь не должна прерывать выполнение остального скрипта
-                console.warn('Ошибка при скрытии заставки:', err);
+                    enableFocusTrap(mobileMenu);
+                }, 220);
             }
-        });
 
-        // 2. МОБИЛЬНОЕ МЕНЮ
-        function toggleMenu() {
-            const mob = document.getElementById('мобМеню');
-            if (!mob) return;
-            mob.classList.toggle('активно');
-            document.body.style.overflow = mob.classList.contains('активно') ? 'hidden' : 'auto';
-        }
-
-        // 3. ПЕРЕКЛЮЧЕНИЕ ТЕМЫ
-        function toggleTheme() {
-            document.body.classList.toggle('светлая-тема');
-        }
-
-        // 4. ТЕСТ 1 (Уровень выгорания)
-        const вопросы1 = [
-            "Трудно ли тебе расслабиться после школьного дня?",
-            "Испытываешь ли ты раздражение при мысли о домашнем задании?",
-            "Бывает ли, что ты спишь меньше 7 часов из-за уроков?",
-            "Чувствуешь ли ты поддержку со стороны учителей?",
-            "Часто ли у тебя пропадает интерес к любимым хобби?",
-            "Пугает ли тебя предстоящая сдача ОГЭ?",
-            "Чувствуешь ли ты себя одиноким в своих проблемах?"
-        ];
-        let индексТеста1 = 0;
-        let баллы1 = 0;
-
-        function начатьТест1() {
-            индексТеста1 = 0; баллы1 = 0;
-            показатьВопрос1();
-        }
-
-        function показатьВопрос1() {
-            const контейнер = document.getElementById('контейнер-теста-1');
-            if (!контейнер) return;
-            if(индексТеста1 < вопросы1.length) {
-                контейнер.innerHTML = `
-                    <p style="color: var(--акцент); margin-bottom: 10px;">Вопрос ${индексТеста1 + 1} из 7</p>
-                    <h3 style="margin-bottom: 30px;">${вопросы1[индексТеста1]}</h3>
-                    <div class="варианты-ответов">
-                        <div class="вариант" onclick="ответ1(1)">Да, часто / Постоянно</div>
-                        <div class="вариант" onclick="ответ1(0)">Нет / Редко</div>
-                    </div>
-                `;
-            } else {
-                завершитьТест1();
-            }
-        }
-
-        function ответ1(балл) {
-            баллы1 += балл; индексТеста1++;
-            показатьВопрос1();
-        }
-
-        function завершитьТест1() {
-            const контейнер = document.getElementById('контейнер-теста-1');
-            if (!контейнер) return;
-            let вердикт = баллы1 > 4 ? "Высокий риск выгорания. Тебе нужен качественный отдых!" : "Твой уровень стресса в пределах нормы.";
-            контейнер.innerHTML = `
-                <h3 style="color: var(--акцент);">Результат готов</h3>
-                <p style="font-size: 1.4rem; margin: 20px 0;">${вердикт}</p>
-                <button class="кнопка-теста" onclick="начатьТест1()">Пройти ещё раз</button>
-            `;
-        }
-
-        // 5. ТЕСТ 2 (АНКЕТИРОВАНИЕ И СТАТИСТИКА)
-        const вопросыАнкеты = [
-            "Что является главным источником твоего стресса?",
-            "Сколько времени ты проводишь в соцсетях ежедневно?",
-            "Чувствуешь ли ты давление со стороны родителей?",
-            "Как часто ты занимаешься спортом или гуляешь?",
-            "Хватает ли тебе времени на полноценный сон?",
-            "Готов(а) ли ты обратиться к психологу за помощью?",
-            "Считаешь ли ты нагрузку в школе чрезмерной?"
-        ];
-        let индексАнкеты = 0;
-        let статДанные = [75, 40, 60, 25]; // Изначальные данные из паспорта
-
-        function начатьАнкету() {
-            индексАнкеты = 0;
-            показатьВопросАнкеты();
-        }
-
-        function показатьВопросАнкеты() {
-            const контейнер = document.getElementById('контейнер-анкеты');
-            if (!контейнер) return;
-            if(индексАнкеты < вопросыАнкеты.length) {
-                контейнер.innerHTML = `
-                    <p style="margin-bottom: 20px;">${вопросыАнкеты[индексАнкеты]}</p>
-                    <div class="варианты-ответов">
-                        <div class="вариант" onclick="ответАнкета(0)">Вариант А</div>
-                        <div class="вариант" onclick="ответАнкета(1)">Вариант Б</div>
-                        <div class="вариант" onclick="ответАнкета(2)">Вариант В</div>
-                    </div>
-                `;
-            } else {
-                контейнер.innerHTML = `
-                    <h3 style="color: var(--акцент);">Спасибо за участие!</h3>
-                    <p>Твои ответы обновлены в общей статистике справа.</p>
-                    <button class="кнопка-теста" style="margin-top:20px;" onclick="начатьАнкету()">Пройти ещё раз</button>
-                `;
-                обновитьГрафик();
-            }
-        }
-
-        function ответАнкета(индекс) {
-            // Имитация изменения статистики в реальном времени
-            if (статДанные[индекс % 4] < 95) статДанные[индекс % 4] += 2;
-            индексАнкеты++;
-            показатьВопросАнкеты();
-        }
-
-        // Исправленная и более надёжная версия обновления графика:
-        function обновитьГрафик() {
-            try {
-                // Преобразуем NodeList в массив — надёжнее для всех окружений
-                const cols = Array.from(document.querySelectorAll('.столбец'));
-                if (!cols.length) return;
-                cols.forEach((col, i) => {
-                    // защитимся на случай, если данных меньше, чем столбцов
-                    const val = (typeof статДанные[i] !== 'undefined') ? статДанные[i] : 0;
-                    // Убедимся, что значение — числовое и в диапазоне 0-100
-                    const num = Math.max(0, Math.min(100, Number(val) || 0));
-                    col.style.height = num + "%";
-                    const label = col.querySelector('.значение-процента');
-                    if (label) label.innerText = num + "%";
+            function closeMenu() {
+                if (!menuTl) {
+                    // fallback simple hide
+                    if (menuBackdrop) { menuBackdrop.style.opacity = '0'; menuBackdrop.style.visibility = 'hidden'; }
+                    if (mobileMenu) mobileMenu.style.transform = 'translateX(100%)';
+                    burgerBtn.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                    setMenuAria(false);
+                    isMenuOpen = false;
+                    disableFocusTrap();
+                    if (burgerBtn) burgerBtn.focus();
+                    return;
+                }
+                menuTl.timeScale(1.6);
+                // register a one-time callback to clean up after reverse completes
+                menuTl.eventCallback('onReverseComplete', () => {
+                    burgerBtn.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                    setMenuAria(false);
+                    disableFocusTrap();
+                    if (burgerBtn) burgerBtn.focus();
+                    menuTl.eventCallback('onReverseComplete', null);
                 });
-            } catch (err) {
-                // чтобы ошибка не ломала остальной скрипт
-                console.error('Ошибка при обновлении графика:', err);
+                menuTl.reverse();
+                isMenuOpen = false;
             }
-        }
 
-        // 6. АНИМАЦИЯ ПРИ СКРОЛЛЕ
-        const наблюдатель = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('активна');
+            function toggleMenu() {
+                if (!isMenuOpen) openMenu();
+                else closeMenu();
+            }
+
+            if (burgerBtn) {
+                burgerBtn.addEventListener('click', (e) => {
+                    toggleMenu();
+                });
+            }
+
+            if (menuBackdrop) {
+                menuBackdrop.addEventListener('click', () => {
+                    if (isMenuOpen) closeMenu();
+                });
+            }
+
+            if (menuBackBtn) {
+                menuBackBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (isMenuOpen) closeMenu();
+                });
+            }
+
+            // Smooth navigation: prevent default jump, close menu, then scroll into view
+            menuLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const href = link.getAttribute('href');
+                    if (href && href.startsWith('#')) {
+                        e.preventDefault();
+                        // one-time callback after reverse to scroll
+                        const navigateTo = () => {
+                            const target = document.querySelector(href);
+                            if (target) {
+                                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        };
+                        // attach callback
+                        if (menuTl) {
+                            menuTl.eventCallback('onReverseComplete', function() {
+                                navigateTo();
+                                menuTl.eventCallback('onReverseComplete', null);
+                            });
+                        } else {
+                            // no GSAP timeline: close and navigate after a small timeout
+                            closeMenu();
+                            setTimeout(navigateTo, 250);
+                            return;
+                        }
+                        // close menu (will trigger the onReverseComplete)
+                        if (isMenuOpen) closeMenu();
+                    } else {
+                        // external link: close menu and let browser handle navigation
+                        if (isMenuOpen) {
+                            if (menuTl) {
+                                menuTl.eventCallback('onReverseComplete', function() {
+                                    menuTl.eventCallback('onReverseComplete', null);
+                                    // allow navigation
+                                    window.location = link.href;
+                                });
+                                closeMenu();
+                                e.preventDefault();
+                            } else {
+                                closeMenu();
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Escape key to close menu if open (global)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && isMenuOpen) {
+                    closeMenu();
                 }
             });
-        }, { threshold: 0.1 });
 
-        // наблюдаем секции — безопасно, т.к. скрипт выполняется внизу body
-        document.querySelectorAll('section').forEach(section => наблюдатель.observe(section));
+            // Intro animations (using GSAP if present)
+            window.addEventListener('load', () => {
+                if (window.gsap) {
+                    const tl = gsap.timeline();
+                    tl.to(".intro-item", { opacity: 1, scale: 1, duration: 1, stagger: 0.18, ease: "power4.out" })
+                      .to("#intro-bar", { width: "100px", duration: 0.75, ease: "power2.inOut" }, "-=0.25")
+                      .to("#intro-overlay", { 
+                        yPercent: -100, 
+                        duration: 0.95, 
+                        ease: "expo.inOut", 
+                        delay: 0.25,
+                        onComplete: () => {
+                            const ov = document.getElementById('intro-overlay');
+                            if (ov) ov.style.display = 'none';
+                        }
+                      })
+                      .from(".hero-reveal", { y: 60, opacity: 0, stagger: 0.14, duration: 1.05, ease: "power4.out" }, "-=0.45");
+                } else {
+                    // fallback: hide overlay
+                    const ov = document.getElementById('intro-overlay');
+                    if (ov) ov.style.display = 'none';
+                }
+            });
 
-        // Инициализация графика при загрузке скрипта (чтобы начальные высоты отобразились корректно)
-        // Если DOM ещё не готов к этому, функция безопасно ничего не сделает.
-        обновитьГрафик();
+            // Scroll-trigger reveal fallback
+            if (window.gsap) {
+                gsap.utils.toArray('.reveal').forEach(el => {
+                    gsap.from(el, {
+                        scrollTrigger: {
+                            trigger: el,
+                            start: "top 90%",
+                        },
+                        y: 40,
+                        opacity: 0,
+                        duration: 0.9,
+                        ease: "power2.out"
+                    });
+                });
+            } else {
+                // simple CSS fallback: reveal immediately
+                document.querySelectorAll('.reveal').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
+            }
+
+            // --- Квиз ---
+            const quizData = [
+                { q: "Какое количество шрифтов рекомендуется использовать в макете?", a: ["1-2", "5-6", "Любое количество"], c: 0 },
+                { q: "Что такое CMYK?", a: ["Профиль для мониторов", "Цветовая модель для печати", "Формат сжатия"], c: 1 },
+                { q: "Какой цвет символизирует спокойствие и доверие?", a: ["Красный", "Синий", "Оранжевый"], c: 1 },
+                { q: "Основная задача UX дизайна — это...", a: ["Красота", "Удобство пользователя", "Размер файла"], c: 1 },
+                { q: "Что такое 'правило третей'?", a: ["Метод верстки кода", "Композиционный прием", "Тип лицензии"], c: 1 }
+            ];
+
+            let currentQ = 0;
+            let score = 0;
+            let canClick = true;
+
+            function loadQuiz() {
+                canClick = true;
+                const q = quizData[currentQ];
+                const title = $('#q-title');
+                const container = $('#q-options');
+                if (!title || !container) return;
+                title.innerText = q.q;
+                container.innerHTML = '';
+
+                q.a.forEach((ans, i) => {
+                    const btn = document.createElement('button');
+                    btn.type = "button";
+                    btn.className = "quiz-btn p-4 rounded-xl border border-white/10 hover:bg-white/5 transition font-bold text-[10px] uppercase tracking-widest text-left";
+                    btn.innerText = ans;
+                    btn.addEventListener('click', () => selectAns(i, btn));
+                    container.appendChild(btn);
+                });
+            }
+
+            function selectAns(idx, btn) {
+                if (!canClick) return;
+                canClick = false;
+
+                const isCorrect = idx === quizData[currentQ].c;
+                if(isCorrect) {
+                    score++;
+                    btn.classList.add('correct');
+                } else {
+                    btn.classList.add('wrong');
+                }
+
+                setTimeout(() => {
+                    currentQ++;
+                    if(currentQ < quizData.length) {
+                        loadQuiz();
+                    } else {
+                        showResults();
+                    }
+                }, 800);
+            }
+
+            function showResults() {
+                const content = $('#q-content');
+                const result = $('#q-result');
+                if (!content || !result) return;
+                content.classList.add('hidden');
+                result.classList.remove('hidden');
+                $('#res-score').innerText = `${score}/5`;
+                $('#res-text').innerText = score >= 4 ? "Отличный результат! Вы мастер основ." : "Хорошо, но стоит еще раз изучить теорию.";
+            }
+
+            function restartQuiz() {
+                currentQ = 0; score = 0;
+                const content = $('#q-content');
+                const result = $('#q-result');
+                if (!content || !result) return;
+                content.classList.remove('hidden');
+                result.classList.add('hidden');
+                loadQuiz();
+            }
+
+            // attach restart handler (removed inline onclick)
+            const restartBtn = $('#quiz-restart');
+            if (restartBtn) restartBtn.addEventListener('click', restartQuiz);
+
+            loadQuiz();
+        });
+    })();
     </script>
 </body>
 </html>
