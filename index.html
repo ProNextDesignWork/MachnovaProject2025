@@ -5,13 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Стоп, выгорание! | Проект Виктории Мачновой</title>
     
-    <!-- Предзагрузка шрифта -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" 
-          rel="stylesheet" 
-          media="print" 
-          onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         /* ================================================================
@@ -39,13 +33,14 @@
         }
 
         /* ================================================================
-           2. МИНИМАЛЬНЫЙ CSS ДЛЯ МГНОВЕННОЙ ОТРИСОВКИ
+           2. ГЛОБАЛЬНЫЕ СТИЛИ И СБРОС
            ================================================================
         */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
         html {
@@ -53,22 +48,16 @@
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--фон);
             color: var(--текст);
             overflow-x: hidden;
             line-height: 1.6;
-            opacity: 1;
-            min-height: 100vh;
-        }
-
-        /* Fallback шрифт пока загружается Inter */
-        body:not(.шрифт-загружен) {
-            font-family: system-ui, -apple-system, sans-serif;
+            transition: background-color 0.5s ease;
         }
 
         /* ================================================================
-           3. УПРОЩЕННАЯ ЗАСТАВКА (0.5 секунды)
+           3. ИНТРО (ЗАСТАВКА) - ВАУ ЭФФЕКТ ПРИ ЗАГРУЗКЕ
            ================================================================
         */
         #интро {
@@ -83,36 +72,75 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            opacity: 1;
-            animation: скрыть-интро 0.5s ease-in-out 0.8s forwards;
-        }
-
-        @keyframes скрыть-интро {
-            to {
-                opacity: 0;
-                visibility: hidden;
-                pointer-events: none;
-            }
+            overflow: hidden;
         }
 
         .лого-интро {
-            font-size: clamp(1.5rem, 6vw, 3.5rem);
+            font-size: clamp(2rem, 8vw, 6rem);
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
-            color: var(--акцент);
+            letter-spacing: 0.04em;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--акцент);
+            animation: проявление-лого 3s forwards;
+            position: relative;
             text-align: center;
-            line-height: 1.2;
-            animation: пульсация 1s ease-in-out infinite alternate;
+            line-height: 1;
         }
 
-        @keyframes пульсация {
-            from { opacity: 0.7; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
+        @media (max-width: 420px) {
+            .лого-интро { letter-spacing: 0.02em; }
+        }
+
+        @keyframes проявление-лого {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(10px); }
+            50% { opacity: 1; color: transparent; }
+            100% { opacity: 1; color: var(--акцент); transform: scale(1) translateY(0); filter: blur(0); }
+        }
+
+        .загрузка-текст {
+            margin-top: 12px;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            font-weight: 500;
+            color: #ffffff;
+            opacity: 0;
+            transform: translateY(6px);
+            animation: проявление-загрузки 2.8s forwards;
+            animation-delay: 1.4s;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        @keyframes проявление-загрузки {
+            0% { opacity: 0; transform: translateY(6px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .прогресс-загрузки {
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .линия-загрузки {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--акцент);
+            animation: прогресс 2.5s ease-in-out forwards;
+        }
+
+        @keyframes прогресс {
+            to { width: 100%; }
         }
 
         /* ================================================================
-           4. ЖИВОЙ ФОН (ЗАГРУЖАЕТСЯ СРАЗУ, НО НЕ БЛОКИРУЕТ)
+           4. ЖИВОЙ ФОН (ПОЛЯРНОЕ СИЯНИЕ)
            ================================================================
         */
         .сияние {
@@ -154,8 +182,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to bottom, rgba(1, 1, 1, 0.9) 0%, transparent 100%);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(to bottom, var(--фон) 0%, transparent 100%);
+            transition: padding 0.3s ease;
         }
 
         .логотип {
@@ -240,7 +268,7 @@
         }
 
         .главный-экран {
-            min-height: calc(100vh - 100px);
+            height: calc(100vh - 100px);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -248,7 +276,7 @@
         }
 
         .заголовок-гигант {
-            font-size: clamp(2.5rem, 12vw, 10rem);
+            font-size: clamp(3rem, 15vw, 12rem);
             font-weight: 900;
             line-height: 0.85;
             letter-spacing: -5px;
@@ -271,7 +299,7 @@
             padding: 80px 5%;
             opacity: 0;
             transform: translateY(40px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transition: 1s ease-out;
         }
 
         section.активна {
@@ -280,7 +308,7 @@
         }
 
         .название-секции {
-            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            font-size: clamp(2rem, 5vw, 4rem);
             font-weight: 800;
             margin-bottom: 50px;
             display: flex;
@@ -293,13 +321,6 @@
             flex-grow: 1;
             height: 1px;
             background: var(--граница-стекла);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.8s ease-out 0.3s;
-        }
-
-        section.активна .название-секции::after {
-            transform: scaleX(1);
         }
 
         /* ================================================================
@@ -313,42 +334,18 @@
             border-radius: var(--радиус);
             padding: clamp(20px, 5vw, 50px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-
-        section.активна .карточка-стекло {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .сетка-паспорта {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
         }
 
         .элемент-паспорта {
             padding: 20px;
             border-bottom: 1px solid var(--граница-стекла);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
         }
-
-        section.активна .элемент-паспорта {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Задержки для элементов паспорта */
-        section.активна .элемент-паспорта:nth-child(1) { transition-delay: 0.1s; }
-        section.активна .элемент-паспорта:nth-child(2) { transition-delay: 0.15s; }
-        section.активна .элемент-паспорта:nth-child(3) { transition-delay: 0.2s; }
-        section.активна .элемент-паспорта:nth-child(4) { transition-delay: 0.25s; }
-        section.активна .элемент-паспорта:nth-child(5) { transition-delay: 0.3s; }
-        section.активна .элемент-паспорта:nth-child(6) { transition-delay: 0.35s; }
 
         .метка {
             font-size: 0.75rem;
@@ -366,20 +363,7 @@
 
         .блок-теории {
             margin-bottom: 40px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
-
-        section.активна .блок-теории {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Задержки для блоков теории */
-        section.активна .блок-теории:nth-child(1) { transition-delay: 0.1s; }
-        section.активна .блок-теории:nth-child(2) { transition-delay: 0.2s; }
-        section.активна .блок-теории:nth-child(3) { transition-delay: 0.3s; }
 
         .блок-теории h3 {
             font-size: 1.8rem;
@@ -443,6 +427,14 @@
         }
         .кнопка-теста:active { transform: translateY(0); }
         .кнопка-теста:focus { outline: 3px solid rgba(225,255,1,0.12); outline-offset: 3px; }
+
+        @media (max-width: 420px) {
+            .кнопка-теста {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+                border-radius: 14px;
+            }
+        }
 
         .варианты-ответов {
             display: flex;
@@ -519,15 +511,12 @@
             header { padding: 15px 5%; }
             .меню-десктоп { display: none; }
             .бургер-кнопка { display: flex; }
-            .заголовок-гигант { line-height: 1; letter-spacing: -2px; }
-            .главный-экран { min-height: auto; padding-top: 50px; padding-bottom: 50px; }
+            .заголовок-гигант { line-height: 1; }
+            .главный-экран { height: auto; padding-top: 50px; }
             section { padding: 40px 5%; }
             .сетка-паспорта { grid-template-columns: 1fr; }
             .контейнер-статистики { height: 200px; gap: 5px; }
-            .кнопка-теста {
-                padding: 12px 20px;
-                font-size: 0.95rem;
-            }
+            .загрузка-текст { margin-top: 8px; }
         }
 
         /* ================================================================
@@ -546,7 +535,13 @@
 <body>
 
     <div id="интро">
-        <div class="лого-интро">СТОП<br>ВЫГОРАНИЕ</div>
+        <div class="лого-интро">СТОП ВЫГОРАНИЕ</div>
+        <div class="загрузка-текст">Идёт загрузка...</div>
+
+        <div class="прогресс-загрузки">
+            <div class="линия-загрузки"></div>
+        </div>
+        <p style="margin-top: 20px; color: var(--акцент); font-weight: 500;">9Б Класс</p>
     </div>
 
     <div class="сияние">
@@ -718,36 +713,24 @@
     </footer>
 
     <script>
-        // 1. ОЧЕНЬ БЫСТРАЯ ЗАГРУЗКА
-        (function() {
-            'use strict';
+        // 1. ЛОГИКА ИНТРО (Убираем заставку)
+        window.addEventListener('load', () => {
+            const intro = document.getElementById('интро');
+            if (!intro) return;
             
-            // A. Устанавливаем флаг, что шрифт загружен
-            document.fonts.ready.then(function() {
-                document.body.classList.add('шрифт-загружен');
-            });
-            
-            // B. Быстро скрываем интро (всего 0.8 секунды)
-            setTimeout(function() {
-                const intro = document.getElementById('интро');
-                if (intro) {
+            // Синхронизируем с CSS-анимацией (3s для лого + задержка)
+            setTimeout(() => {
+                intro.style.transition = '1s cubic-bezier(0.85, 0, 0.15, 1)';
+                intro.style.opacity = '0';
+                intro.style.transform = 'translateY(-100%)';
+                
+                setTimeout(() => {
                     intro.style.display = 'none';
-                }
-            }, 800);
-            
-            // C. Для повторных посещений - используем localStorage
-            if (localStorage.getItem('быстрый-доступ')) {
-                // Если пользователь уже был на сайте, скрываем интро СРАЗУ
-                const intro = document.getElementById('интро');
-                if (intro) {
-                    intro.style.display = 'none';
-                }
-            } else {
-                // Первый визит - запоминаем
-                localStorage.setItem('быстрый-доступ', 'true');
-            }
-            
-        })();
+                    // Убеждаемся, что overflow восстановлен
+                    document.body.style.overflow = 'auto';
+                }, 1000);
+            }, 3000); // Соответствует времени анимации логотипа
+        });
 
         // 2. МОБИЛЬНОЕ МЕНЮ
         function toggleMenu() {
@@ -890,7 +873,7 @@
                 const cols = document.querySelectorAll('.столбец');
                 if (!cols || cols.length === 0) {
                     // Если график еще не загружен, пробуем снова через небольшой интервал
-                    setTimeout(обновитьГрафик, 50);
+                    setTimeout(обновитьГрафик, 100);
                     return;
                 }
                 
@@ -910,7 +893,7 @@
             }
         }
 
-        // 8. АНИМАЦИЯ ПРИ СКРОЛЛЕ (упрощенная и быстрая)
+        // 8. АНИМАЦИЯ ПРИ СКРОЛЛЕ
         const наблюдатель = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 // Добавляем класс только если секция видна И еще не активна
@@ -928,33 +911,7 @@
         // 9. ИНИЦИАЛИЗАЦИЯ ГРАФИКА ПРИ ЗАГРУЗКЕ
         document.addEventListener('DOMContentLoaded', () => {
             // Даем время на рендеринг графика
-            setTimeout(обновитьГрафик, 100);
-            
-            // Плавный скролл с offset для фиксированного header
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        e.preventDefault();
-                        const headerHeight = document.querySelector('header').offsetHeight;
-                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-                        
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
-                        
-                        // Закрываем мобильное меню если оно открыто
-                        const mob = document.getElementById('мобМеню');
-                        if (mob && mob.classList.contains('активно')) {
-                            toggleMenu();
-                        }
-                    }
-                });
-            });
+            setTimeout(обновитьГрафик, 200);
         });
     </script>
 </body>
