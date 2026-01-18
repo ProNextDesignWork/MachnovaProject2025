@@ -55,47 +55,52 @@
         .quiz-btn.correct { background-color: #10b981 !important; color: white; border-color: #10b981; }
         .quiz-btn.wrong { background-color: #ef4444 !important; color: white; border-color: #ef4444; }
 
-        /* --- Бургер-кнопка --- */
-        #burger-btn { z-index: 60; position: relative; } 
+        /* === BURGER === */
+        #burger-btn { z-index: 60; }
         .burger-line {
-            display: block; width: 24px; height: 2px;
-            background-color: white; margin: 5px auto;
-            transition: transform 0.45s cubic-bezier(.2,.8,.2,1), opacity 0.35s;
-            will-change: transform, opacity;
+          display: block;
+          width: 24px;
+          height: 2px;
+          background: white;
+          margin: 5px auto;
+          transition: transform .4s ease, opacity .3s ease;
         }
-        #burger-btn.active .burger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-        #burger-btn.active .burger-line:nth-child(2) { opacity: 0; transform: translateX(10px); }
-        #burger-btn.active .burger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+        #burger-btn.active .burger-line:nth-child(1) {
+          transform: translateY(7px) rotate(45deg);
+        }
+        #burger-btn.active .burger-line:nth-child(2) {
+          opacity: 0;
+        }
+        #burger-btn.active .burger-line:nth-child(3) {
+          transform: translateY(-7px) rotate(-45deg);
+        }
 
-        /* --- Мобильное меню --- */
+        /* === BACKDROP === */
         #menu-backdrop {
-            position: fixed; inset: 0; z-index: 49;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            opacity: 0; visibility: hidden;
-            transition: opacity 0.35s ease, visibility 0.35s ease;
-            will-change: opacity;
+          position: fixed;
+          inset: 0;
+          z-index: 49;
+          background: rgba(0,0,0,.35);
+          opacity: 0;
+          visibility: hidden;
         }
 
+        /* === MOBILE MENU === */
         #mobile-menu {
-            position: fixed; top: 0; right: 0; bottom: 0;
-            width: 80%; max-width: 400px;
-            background: #0a0a0a;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 50;
-            display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
-            transform: translateX(100%);
-            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-            will-change: transform;
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 80%;
+          max-width: 400px;
+          background: #0a0a0a;
+          transform: translateX(100%);
+          z-index: 50;
         }
 
-        /* Добавим небольшую подкрутку для меню ссылок */
-        .menu-link { will-change: transform, opacity; }
-
-        /* prefers-reduced-motion поддержка */
-        @media (prefers-reduced-motion: reduce) {
-          * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+        .menu-link {
+          opacity: 0;
+          transform: translateX(30px);
         }
 
         /* уменьшение blur на мобильных устройствах для производительности */
@@ -153,8 +158,15 @@
         </div>
 
         <div class="absolute top-8 left-8 z-20 menu-back opacity-0">
-            <button class="group flex items-center gap-3 text-white/50 hover:text-white transition-colors duration-300" type="button">
-                <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <button
+                id="menu-back"
+                class="group flex items-center gap-3 text-white/50 hover:text-white transition-colors duration-300"
+                type="button"
+            >
+                <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
                 <span class="text-[10px] uppercase font-black tracking-[0.2em]">Назад</span>
             </button>
         </div>
@@ -383,28 +395,22 @@
             const mobileMenu = $('#mobile-menu');
             const menuBackdrop = $('#menu-backdrop');
             const menuLinks = $$('.menu-link');
-            const menuFooter = document.querySelector('.menu-footer');
-            const menuBack = document.querySelector('.menu-back'); // контейнер "Назад"
-            const menuBackBtn = menuBack ? menuBack.querySelector('button') : null;
+            const menuFooter = $('.menu-footer');
+            const menuBack = $('.menu-back');
+            const menuBackBtn = $('#menu-back');
             let isMenuOpen = false;
 
             // Accessibility helpers
-            const FOCUSABLE_SELECTORS = 'a[href], button:not([disabled]), textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select';
+            const FOCUSABLE_SELECTORS = 'a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])';
+            
+            // Helper function to get focusable elements
             function getFocusable(el) {
                 if (!el) return [];
-                return Array.from(el.querySelectorAll(FOCUSABLE_SELECTORS)).filter(i => i.offsetParent !== null);
-            }
-
-            // Build menu timeline only if GSAP available
-            let menuTl = null;
-            if (window.gsap) {
-                menuTl = gsap.timeline({ paused: true, reversed: true });
-
-                if (menuBackdrop) menuTl.fromTo(menuBackdrop, { autoAlpha: 0, visibility: 'hidden' }, { autoAlpha: 1, visibility: 'visible', duration: 0.35, ease: "power2.out" });
-                if (mobileMenu) menuTl.fromTo(mobileMenu, { x: "100%" }, { x: "0%", duration: 0.5, ease: "power4.out" }, "-=0.2");
-                if (menuBack) menuTl.fromTo(menuBack, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.36 }, "-=0.35");
-                if (menuLinks && menuLinks.length) menuTl.fromTo(menuLinks, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.45, stagger: 0.08, ease: "back.out(1.2)" }, "-=0.3");
-                if (menuFooter) menuTl.fromTo(menuFooter, { opacity: 0 }, { opacity: 0.6, duration: 0.35 }, "-=0.25");
+                return Array.from(el.querySelectorAll(FOCUSABLE_SELECTORS)).filter(i => 
+                    i.offsetParent !== null && 
+                    !i.disabled && 
+                    !i.getAttribute('aria-hidden')
+                );
             }
 
             // Functions to update aria states
@@ -412,6 +418,62 @@
                 if (burgerBtn) burgerBtn.setAttribute('aria-expanded', String(open));
                 if (mobileMenu) mobileMenu.setAttribute('aria-hidden', String(!open));
                 if (menuBackdrop) menuBackdrop.setAttribute('aria-hidden', String(!open));
+            }
+
+            // Build menu timeline only if GSAP available
+            let menuTl = null;
+            if (window.gsap) {
+                menuTl = gsap.timeline({ 
+                    paused: true,
+                    onReverseComplete: function() {
+                        // Cleanup after menu closes
+                        burgerBtn.classList.remove('active');
+                        document.body.classList.remove('menu-open');
+                        setMenuAria(false);
+                        disableFocusTrap();
+                        if (burgerBtn) burgerBtn.focus();
+                    }
+                });
+
+                // Build animation sequence
+                if (menuBackdrop) {
+                    menuTl.fromTo(menuBackdrop,
+                        { autoAlpha: 0, visibility: 'hidden' },
+                        { autoAlpha: 1, visibility: 'visible', duration: 0.35, ease: "power2.out" }
+                    );
+                }
+
+                if (mobileMenu) {
+                    menuTl.fromTo(mobileMenu,
+                        { x: "100%" },
+                        { x: "0%", duration: 0.5, ease: "power4.out" },
+                        "-=0.2"
+                    );
+                }
+
+                if (menuBack) {
+                    menuTl.fromTo(menuBack,
+                        { opacity: 0, x: -10 },
+                        { opacity: 1, x: 0, duration: 0.36 },
+                        "-=0.35"
+                    );
+                }
+
+                if (menuLinks.length) {
+                    menuTl.fromTo(menuLinks,
+                        { opacity: 0, x: 40 },
+                        { opacity: 1, x: 0, duration: 0.45, stagger: 0.08, ease: "power2.out" },
+                        "-=0.3"
+                    );
+                }
+
+                if (menuFooter) {
+                    menuTl.fromTo(menuFooter,
+                        { opacity: 0 },
+                        { opacity: 0.6, duration: 0.35 },
+                        "-=0.25"
+                    );
+                }
             }
 
             // Focus trap variables
@@ -435,9 +497,6 @@
                             currentFocusIndex = (currentFocusIndex + 1) % trappedElements.length;
                         }
                         trappedElements[currentFocusIndex].focus();
-                    } else if (e.key === 'Escape') {
-                        // close menu on Esc
-                        if (isMenuOpen) closeMenu();
                     }
                 };
                 document.addEventListener('keydown', trapKeyHandler);
@@ -453,122 +512,108 @@
 
             function openMenu() {
                 if (!menuTl) {
-                    // fallback simple show
-                    if (menuBackdrop) { menuBackdrop.style.opacity = '1'; menuBackdrop.style.visibility = 'visible'; }
-                    if (mobileMenu) mobileMenu.style.transform = 'translateX(0%)';
+                    // Fallback if GSAP is not available
+                    if (menuBackdrop) {
+                        menuBackdrop.style.opacity = '1';
+                        menuBackdrop.style.visibility = 'visible';
+                    }
+                    if (mobileMenu) {
+                        mobileMenu.style.transform = 'translateX(0)';
+                    }
                     burgerBtn.classList.add('active');
                     document.body.classList.add('menu-open');
                     setMenuAria(true);
+                    if (mobileMenu) enableFocusTrap(mobileMenu);
                     isMenuOpen = true;
-                    enableFocusTrap(mobileMenu);
                     return;
                 }
-                menuTl.eventCallback('onReverseComplete', null);
+                
+                // Reset timeScale for normal speed
+                menuTl.timeScale(1);
+                menuTl.play(0);
                 burgerBtn.classList.add('active');
                 document.body.classList.add('menu-open');
                 setMenuAria(true);
-                menuTl.timeScale(1);
-                menuTl.play();
+                enableFocusTrap(mobileMenu);
                 isMenuOpen = true;
-                // set focus after a short delay to allow menu to appear for non-reduced-motion users
-                setTimeout(() => {
-                    enableFocusTrap(mobileMenu);
-                }, 220);
             }
 
             function closeMenu() {
                 if (!menuTl) {
-                    // fallback simple hide
-                    if (menuBackdrop) { menuBackdrop.style.opacity = '0'; menuBackdrop.style.visibility = 'hidden'; }
-                    if (mobileMenu) mobileMenu.style.transform = 'translateX(100%)';
+                    // Fallback if GSAP is not available
+                    if (menuBackdrop) {
+                        menuBackdrop.style.opacity = '0';
+                        menuBackdrop.style.visibility = 'hidden';
+                    }
+                    if (mobileMenu) {
+                        mobileMenu.style.transform = 'translateX(100%)';
+                    }
                     burgerBtn.classList.remove('active');
                     document.body.classList.remove('menu-open');
                     setMenuAria(false);
-                    isMenuOpen = false;
                     disableFocusTrap();
                     if (burgerBtn) burgerBtn.focus();
+                    isMenuOpen = false;
                     return;
                 }
+                
+                // Faster speed for closing
                 menuTl.timeScale(1.6);
-                // register a one-time callback to clean up after reverse completes
-                menuTl.eventCallback('onReverseComplete', () => {
-                    burgerBtn.classList.remove('active');
-                    document.body.classList.remove('menu-open');
-                    setMenuAria(false);
-                    disableFocusTrap();
-                    if (burgerBtn) burgerBtn.focus();
-                    menuTl.eventCallback('onReverseComplete', null);
-                });
                 menuTl.reverse();
                 isMenuOpen = false;
             }
 
             function toggleMenu() {
-                if (!isMenuOpen) openMenu();
-                else closeMenu();
+                if (!isMenuOpen) {
+                    openMenu();
+                } else {
+                    closeMenu();
+                }
             }
 
+            // Burger button click handler
             if (burgerBtn) {
-                burgerBtn.addEventListener('click', (e) => {
-                    toggleMenu();
-                });
+                burgerBtn.addEventListener('click', toggleMenu);
             }
 
+            // Backdrop click handler
             if (menuBackdrop) {
-                menuBackdrop.addEventListener('click', () => {
-                    if (isMenuOpen) closeMenu();
-                });
+                menuBackdrop.addEventListener('click', closeMenu);
             }
 
+            // Back button in menu
             if (menuBackBtn) {
                 menuBackBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (isMenuOpen) closeMenu();
+                    closeMenu();
                 });
             }
 
-            // Smooth navigation: prevent default jump, close menu, then scroll into view
+            // Smooth navigation for menu links
             menuLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     const href = link.getAttribute('href');
+                    
+                    // Handle internal links
                     if (href && href.startsWith('#')) {
                         e.preventDefault();
-                        // one-time callback after reverse to scroll
-                        const navigateTo = () => {
-                            const target = document.querySelector(href);
+                        closeMenu();
+                        
+                        // Small delay to allow menu to close before scrolling
+                        setTimeout(() => {
+                            const target = $(href);
                             if (target) {
-                                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                        };
-                        // attach callback
-                        if (menuTl) {
-                            menuTl.eventCallback('onReverseComplete', function() {
-                                navigateTo();
-                                menuTl.eventCallback('onReverseComplete', null);
-                            });
-                        } else {
-                            // no GSAP timeline: close and navigate after a small timeout
-                            closeMenu();
-                            setTimeout(navigateTo, 250);
-                            return;
-                        }
-                        // close menu (will trigger the onReverseComplete)
-                        if (isMenuOpen) closeMenu();
-                    } else {
-                        // external link: close menu and let browser handle navigation
-                        if (isMenuOpen) {
-                            if (menuTl) {
-                                menuTl.eventCallback('onReverseComplete', function() {
-                                    menuTl.eventCallback('onReverseComplete', null);
-                                    // allow navigation
-                                    window.location = link.href;
+                                target.scrollIntoView({ 
+                                    behavior: 'smooth', 
+                                    block: 'start' 
                                 });
-                                closeMenu();
-                                e.preventDefault();
-                            } else {
-                                closeMenu();
                             }
-                        }
+                        }, 300);
+                    } 
+                    // External links - just close menu
+                    else if (href && href.startsWith('http')) {
+                        closeMenu();
+                        // Navigation will continue naturally
                     }
                 });
             });
@@ -598,14 +643,14 @@
                       })
                       .from(".hero-reveal", { y: 60, opacity: 0, stagger: 0.14, duration: 1.05, ease: "power4.out" }, "-=0.45");
                 } else {
-                    // fallback: hide overlay
+                    // fallback: hide overlay immediately
                     const ov = document.getElementById('intro-overlay');
                     if (ov) ov.style.display = 'none';
                 }
             });
 
             // Scroll-trigger reveal fallback
-            if (window.gsap) {
+            if (window.gsap && window.ScrollTrigger) {
                 gsap.utils.toArray('.reveal').forEach(el => {
                     gsap.from(el, {
                         scrollTrigger: {
@@ -620,7 +665,10 @@
                 });
             } else {
                 // simple CSS fallback: reveal immediately
-                document.querySelectorAll('.reveal').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
+                document.querySelectorAll('.reveal').forEach(el => { 
+                    el.style.opacity = 1; 
+                    el.style.transform = 'none'; 
+                });
             }
 
             // --- Квиз ---
@@ -697,7 +745,7 @@
                 loadQuiz();
             }
 
-            // attach restart handler (removed inline onclick)
+            // attach restart handler
             const restartBtn = $('#quiz-restart');
             if (restartBtn) restartBtn.addEventListener('click', restartQuiz);
 
