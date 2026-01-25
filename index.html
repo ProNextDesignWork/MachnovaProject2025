@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Стоп, выгорание! | Проект Виктории Мачновой</title>
+    <title>Стоп, выгорание! | Исследовательский проект</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,351 +11,267 @@
     
     <style>
         /* ================================================================
-           1. НАСТРОЙКИ ПАЛИТРЫ (RELAX MODE)
+           1. ПАЛИТРА "ANTI-ANXIETY" & BASE
            ================================================================ */
         :root {
-            /* Фон: Теплый, сложный оттенок (не просто белый), чтобы глаза отдыхали */
-            --bg-body: #F2F5F3; 
-            --bg-secondary: #E8ECEB;
+            --bg-body: #F4F7F6;
+            --bg-card: #FFFFFF;
+            --bg-section-alt: #E9EFED;
             
-            /* Цвета: Природная, спокойная гамма */
-            --primary: #5D8A82;   /* Шалфейный зеленый (Sage) - успокаивает ЦНС */
-            --primary-dark: #4A7069;
-            --primary-light: #E1EBE9;
+            --primary: #5D8A82;       
+            --primary-hover: #4A6E68;
+            --primary-light: #DCE6E3; 
             
-            --secondary: #8D99AE; /* Мягкий серо-голубой (Cool Grey) */
-            --accent: #D4A373;    /* Теплый песочный/крафтовый (Calm Earth) */
+            --accent: #C89666;        
+            --accent-light: #F2E8DF;
             
-            --text-main: #2F3E46; /* Темно-зеленый глубокий (вместо черного) */
-            --text-light: #52796F;
-            
-            /* Тени и карточки */
-            --card-bg: #FFFFFF;
-            --shadow-soft: 0 10px 30px rgba(93, 138, 130, 0.08);
-            --shadow-hover: 0 15px 35px rgba(93, 138, 130, 0.15);
+            --text-main: #2F3E46;     
+            --text-muted: #5B7068;
             
             --radius-md: 16px;
             --radius-lg: 24px;
+            
+            --shadow-soft: 0 15px 40px rgba(93, 138, 130, 0.15); 
+            --shadow-hover: 0 25px 60px rgba(93, 138, 130, 0.25);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; font-size: 16px; }
+        html { 
+    scroll-behavior: smooth; 
+    font-size: 16px; 
+    scroll-padding-top: 80px; /* Отступ сверху при клике на якорь */
+}
         
         body {
-            font-family: 'Manrope', sans-serif; /* Google Sans style */
+            font-family: 'Manrope', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             line-height: 1.7;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Важно от горизонтального скролла */
         }
 
-        h1, h2, h3, h4, h5 { 
-            font-weight: 800; 
-            line-height: 1.25; 
-            letter-spacing: -0.02em;
-        }
-
-        a { text-decoration: none; transition: all 0.3s ease; }
+        h1, h2, h3, h4 { font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+        p { margin-bottom: 1rem; color: var(--text-muted); }
         ul { list-style: none; }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        a { text-decoration: none; transition: 0.3s; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; } /* Чуть уменьшил паддинг для узких экранов */
+        
+        /* Утилиты */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        .tag { 
+            display: inline-block; 
+            color: var(--accent); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-size: 0.8rem; 
+            margin-bottom: 15px; 
+            background: rgba(200, 150, 102, 0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
         }
 
-        /* Утилиты анимации */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 14px 32px; border-radius: 50px; font-weight: 700;
+            cursor: pointer; transition: 0.3s; border: none; font-size: 1rem;
+            text-align: center;
         }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 20px rgba(93, 138, 130, 0.25); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-3px); }
+        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        .btn-outline:hover { background: var(--primary-light); }
+        .btn-sos { background: #E57373; color: white; box-shadow: 0 8px 20px rgba(229, 115, 115, 0.3); }
+        .btn-sos:hover { background: #EF5350; transform: translateY(-3px); }
 
         /* ================================================================
-           2. NAVIGATION
+           2. HEADER (С УЛУЧШЕННОЙ АДАПТИВНОСТЬЮ)
            ================================================================ */
         header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(242, 245, 243, 0.95); /* Цвет фона body + прозрачность */
-            backdrop-filter: blur(10px);
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(244, 247, 246, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             padding: 15px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.03);
         }
-
         .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
-
-        .logo {
-            font-size: 1.3rem;
-            color: var(--primary);
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
         
-        .logo-icon {
-            width: 36px; height: 36px;
-            background: var(--primary);
-            color: white; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .nav-links { display: flex; gap: 30px; align-items: center; }
-        .nav-links a { color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
+        .logo { font-size: 1.3rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .logo span { font-weight: 500; color: var(--text-muted); font-size: 0.9rem; }
+        
+        .nav-links { display: flex; gap: 25px; }
+        .nav-links a { color: var(--text-main); font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
         .nav-links a:hover { color: var(--primary); }
 
-        .btn-main {
-            background: var(--primary);
-            color: white !important;
-            padding: 12px 30px;
-            border-radius: 12px;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(93, 138, 130, 0.3);
-        }
-        .btn-main:hover { 
-            background: var(--primary-dark); 
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 15px rgba(93, 138, 130, 0.4); 
-        }
-
-        .burger { display: none; font-size: 1.8rem; color: var(--text-main); cursor: pointer; }
-        
-        @media (max-width: 900px) {
-            .nav-links { 
-                display: none; position: absolute; top: 100%; left: 0; width: 100%; 
-                background: var(--bg-body); flex-direction: column; padding: 20px; 
-                box-shadow: var(--shadow-soft); border-bottom: 1px solid #ddd;
-            }
-            .nav-links.active { display: flex; }
-            .burger { display: block; }
-        }
-
         /* ================================================================
-           3. HERO SECTION (ОБНОВЛЕННЫЙ)
+           3. HERO SECTION
            ================================================================ */
         .hero {
-            padding: 160px 0 100px;
-            position: relative;
-            overflow: hidden;
-            /* Интересный, но спокойный фон: градиент + шум */
-            background: linear-gradient(120deg, #F2F5F3 0%, #E0E8E5 100%);
+            padding: 180px 0 120px;
+            background: radial-gradient(circle at 70% 30%, #E8F0EE 0%, #F4F7F6 70%);
+            position: relative; overflow: hidden;
+            text-align: left; 
         }
-
-        /* Декор на фоне - мягкие круги */
-        .hero-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: linear-gradient(to right, #ffffff, rgba(255,255,255,0));
-            opacity: 0.6;
-            z-index: 0;
+        .hero-blob {
+            position: absolute; width: 600px; height: 600px;
+            background: linear-gradient(135deg, rgba(93, 138, 130, 0.1), rgba(200, 150, 102, 0.05));
+            border-radius: 50%; filter: blur(60px); z-index: 0;
+            top: -150px; right: -150px; animation: float 10s infinite alternate;
         }
-        .circle-1 { width: 600px; height: 600px; top: -100px; right: -100px; }
-        .circle-2 { width: 400px; height: 400px; bottom: 50px; left: -50px; background: #D8E6E2; opacity: 0.4; filter: blur(40px); }
+        @keyframes float { from { transform: translate(0,0); } to { transform: translate(-30px, 40px); } }
 
         .hero-content { 
-            position: relative; 
-            z-index: 1; 
-            max-width: 1000px; 
-            margin: 0 auto;
+            position: relative; z-index: 2; max-width: 800px; margin: 0 auto;
+            display: flex; flex-direction: column; align-items: flex-start;
         }
 
-        .hero-tag {
-            display: inline-block;
-            background: var(--primary-light);
-            color: var(--primary-dark);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            margin-bottom: 25px;
-            letter-spacing: 0.5px;
-        }
-
-        .hero-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            margin-bottom: 25px;
-            color: var(--text-main);
-        }
-        .hero-title span { 
-            color: var(--primary); 
-            position: relative; 
-            display: inline-block;
-        }
-        /* Подчеркивание слова "сгореть" */
+        .hero-title { font-size: clamp(2.2rem, 5vw, 4rem); margin-bottom: 25px; color: var(--text-main); }
+        .hero-title span { color: var(--primary); position: relative; }
         .hero-title span::after {
-            content: ''; position: absolute; bottom: 8px; left: 0; width: 100%; height: 12px;
-            background: var(--accent); opacity: 0.3; z-index: -1; transform: skewX(-15deg);
+            content: ''; position: absolute; bottom: 8px; left: 0; width: 100%; height: 14px;
+            background: var(--accent); opacity: 0.25; z-index: -1; transform: skewX(-15deg);
         }
-
-        .hero-desc {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            margin-bottom: 40px;
-            max-width: 600px;
-        }
-
+        .hero-desc { font-size: 1.25rem; margin-bottom: 40px; max-width: 650px; }
         .hero-btns { display: flex; gap: 15px; flex-wrap: wrap; }
-        
-        .btn-outline {
-            background: transparent;
-            color: var(--text-main);
-            border: 2px solid var(--primary);
-            padding: 12px 30px;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-        .btn-outline:hover { background: var(--primary-light); }
-
-        /* СПЕЦИФИЧНОЕ ПРАВИЛО ДЛЯ ПК (Выравнивание вправо) */
-        @media (min-width: 992px) {
-            .hero-content {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end; /* Выравнивание всего блока вправо */
-                text-align: right;
-            }
-            .hero-desc {
-                margin-left: auto; /* Текст тоже вправо */
-                margin-right: 0;
-            }
-            .hero-btns {
-                justify-content: flex-end;
-            }
-        }
 
         /* ================================================================
-           4. SECTIONS COMMON & CARDS
+           4. SECTIONS & COMPONENTS
            ================================================================ */
         section { padding: 90px 0; }
-        .bg-soft { background-color: var(--bg-secondary); }
+        .bg-alt { background-color: var(--bg-section-alt); }
+        
+        .section-header { text-align: center; margin-bottom: 60px; max-width: 700px; margin: 0 auto 60px; }
+        .section-title { font-size: 2.2rem; margin-bottom: 15px; word-wrap: break-word; } /* word-wrap чтобы длинные слова не ломали экран */
 
-        .section-header { text-align: center; margin-bottom: 60px; max-width: 700px; margin-left: auto; margin-right: auto; }
-        .section-tag { color: var(--accent); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 10px; }
-        .section-title { font-size: 2.5rem; margin-bottom: 15px; color: var(--text-main); }
-        
-        /* КАРТОЧКИ - Контраст и Читаемость */
-        .info-card {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-soft);
-            transition: 0.4s;
-            border: 1px solid rgba(255,255,255,0.8); /* Легкая обводка */
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .info-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: var(--shadow-hover);
-            border-color: var(--primary-light);
-        }
-        
-        /* Декор полоска сверху */
-        .info-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
-            background: var(--bg-secondary);
-        }
-        .info-card.primary-b::before { background: var(--primary); }
-        .info-card.accent-b::before { background: var(--accent); }
-        .info-card.secondary-b::before { background: var(--secondary); }
+        /* Grid - ИСПРАВЛЕНА МИНИМАЛЬНАЯ ШИРИНА */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
 
-        .info-card h3 { font-size: 1.4rem; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
-        
-        .passport-list li {
-            margin-bottom: 12px;
-            padding-left: 25px;
-            position: relative;
-            color: var(--text-light);
-            font-weight: 500;
+        .card {
+            background: var(--bg-card); padding: 35px; border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft); transition: 0.4s; 
+            border: 1px solid rgba(93, 138, 130, 0.2); height: 100%;
         }
-        .passport-list li::before {
-            content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px;
-            border-radius: 50%; background: var(--accent);
+        .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-hover); border-color: var(--primary); }
+        .card h3 { margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 10px; font-size: 1.4rem; }
+        .card-icon { width: 50px; height: 50px; background: var(--primary-light); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px; }
+
+        /* ================================================================
+           5. NAVIGATOR (INTERACTIVE)
+           ================================================================ */
+        .nav-card {
+            background: white; padding: 30px; border-radius: 20px; text-align: center;
+            border: 1px solid rgba(93, 138, 130, 0.2); box-shadow: var(--shadow-soft);
+            cursor: pointer; transition: 0.3s;
+        }
+        .nav-card:hover { border-color: var(--primary); transform: scale(1.02); }
+        .nav-card.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .nav-card.active p, .nav-card.active h4 { color: white; }
+        
+        .solution-box {
+            margin-top: 40px; background: white; padding: 40px; border-radius: 20px;
+            box-shadow: var(--shadow-soft); display: none; animation: fadeIn 0.5s; border-left: 5px solid var(--accent);
+            border: 1px solid rgba(93, 138, 130, 0.1);
         }
 
         /* ================================================================
-           5. OTHER SECTIONS (UPDATED COLORS)
+           6. ENCYCLOPEDIA (TABS)
            ================================================================ */
-        .passport-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;
-        }
-
-        /* Tabs */
-        .tabs-container {
-            background: white; border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-soft); overflow: hidden; display: flex;
-            border: 1px solid rgba(255,255,255,0.5);
+        .tabs-wrapper { 
+            display: flex; background: white; border-radius: var(--radius-lg); overflow: hidden; 
+            box-shadow: var(--shadow-soft); min-height: 500px;
+            border: 1px solid rgba(93, 138, 130, 0.2);
         }
         .tabs-nav { width: 30%; background: #FAFBFB; border-right: 1px solid #EEE; padding: 30px 0; }
         .tab-btn {
-            width: 100%; padding: 18px 30px; text-align: left; background: none; border: none;
-            font-size: 1.05rem; font-weight: 600; color: var(--text-light); cursor: pointer;
-            font-family: inherit; transition: 0.3s;
+            width: 100%; padding: 20px 30px; text-align: left; background: none; border: none;
+            font-family: inherit; font-weight: 600; font-size: 1.05rem; color: var(--text-muted);
+            cursor: pointer; transition: 0.3s; border-left: 4px solid transparent;
         }
-        .tab-btn:hover { color: var(--primary); background: #F2F5F3; }
-        .tab-btn.active { color: var(--primary); background: white; border-left: 4px solid var(--primary); }
-        .tabs-content { width: 70%; padding: 50px; }
-        .tab-pane { display: none; animation: fade 0.5s; }
-        .tab-pane.active { display: block; }
-
-        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Quiz */
-        .quiz-wrapper {
-            background: white; max-width: 800px; margin: 0 auto 60px;
-            border-radius: var(--radius-lg); padding: 50px;
-            box-shadow: var(--shadow-soft); text-align: center;
-        }
-        .quiz-btn {
-            display: block; width: 100%; padding: 16px; margin: 12px 0;
-            background: #FAFAFA; border: 1px solid #EEE; border-radius: 12px;
-            font-size: 1rem; font-weight: 600; cursor: pointer; color: var(--text-main);
-            font-family: inherit; transition: 0.2s;
-        }
-        .quiz-btn:hover { background: var(--primary-light); color: var(--primary-dark); border-color: var(--primary-light); }
-        .progress-line { height: 8px; background: #EEE; border-radius: 4px; margin-bottom: 30px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
-
-        /* Tech Cards */
-        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        .tech-card {
-            background: white; padding: 35px; border-radius: 20px; text-align: center;
-            box-shadow: var(--shadow-soft); transition: 0.3s;
-        }
-        .tech-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
-        .tech-icon { font-size: 3rem; margin-bottom: 20px; color: var(--primary); }
-
-        /* Research Chart */
-        .chart-layout {
-            display: flex; gap: 50px; background: white; padding: 50px;
-            border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
-        }
-        .bar { background: var(--primary); opacity: 0.8; border-radius: 8px 8px 0 0; width: 100%; height: 0; transition: height 1.5s ease; position: relative; }
-        .bar:hover { opacity: 1; }
-        .bar-label { margin-top: 15px; font-size: 0.85rem; font-weight: 700; color: var(--secondary); text-align: center; }
+        .tab-btn:hover { background: #F4F7F6; color: var(--primary); }
+        .tab-btn.active { background: white; color: var(--primary); border-left-color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
-        /* Footer */
-        footer { background: #2F3E46; color: white; padding: 60px 0 30px; margin-top: 80px; text-align: center; }
-        .footer-cta {
-            background: var(--primary); padding: 40px; border-radius: 24px;
-            max-width: 800px; margin: -100px auto 50px; position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); color: white;
-        }
+        .tabs-content { width: 70%; padding: 50px; position: relative; }
+        .tab-pane { display: none; animation: slideUp 0.6s ease; }
+        .tab-pane.active { display: block; }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* ================================================================
+           7. RESEARCH (CHARTS)
+           ================================================================ */
+        .stat-row { margin-bottom: 25px; }
+        .stat-meta { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 700; color: var(--text-main); }
+        .stat-track { width: 100%; height: 12px; background: #E0E7E5; border-radius: 10px; overflow: hidden; }
+        .stat-bar { height: 100%; background: var(--primary); width: 0; transition: width 1.5s cubic-bezier(0.2, 1, 0.3, 1); border-radius: 10px; }
+
+        /* ================================================================
+           8. QUIZ (EXTENDED)
+           ================================================================ */
+        .quiz-container { 
+            max-width: 800px; margin: 0 auto; background: white; border-radius: 30px; padding: 50px; 
+            box-shadow: var(--shadow-soft); border: 1px solid rgba(93, 138, 130, 0.2);
+        }
+        .quiz-option {
+            display: block; width: 100%; padding: 18px 25px; margin: 12px 0;
+            background: #F9FAFA; border: 1px solid #EEE; border-radius: 15px;
+            font-size: 1.05rem; font-weight: 600; text-align: left; cursor: pointer;
+            transition: 0.2s; color: var(--text-main);
+        }
+        .quiz-option:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary-light); }
+        .progress-container { width: 100%; height: 6px; background: #EEE; border-radius: 3px; margin-bottom: 30px; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.3s; }
+
+        /* QR Block */
+        .qr-block {
+            text-align: center; background: white; padding: 30px; border-radius: 24px;
+            box-shadow: var(--shadow-soft); border: 1px solid rgba(93, 138, 130, 0.2);
+            display: inline-block; margin-top: 20px;
+        }
+        .qr-block img { max-width: 100%; height: auto; border-radius: 8px; }
+
+        /* Footer */
+        footer { background: #2F3E46; color: white; padding: 80px 0 30px; margin-top: 100px; }
+        .footer-col h4 { color: white; margin-bottom: 20px; font-size: 1.2rem; }
+        .footer-link { color: #A0AEC0; display: block; margin-bottom: 10px; }
+        .footer-link:hover { color: var(--accent); padding-left: 5px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 50px; padding-top: 30px; text-align: center; font-size: 0.9rem; color: #718096; }
+
+        /* ================================================================
+           9. MOBILE ADAPTATION (ИСПРАВЛЕННЫЕ МЕДИА-ЗАПРОСЫ)
+           ================================================================ */
         @media (max-width: 900px) {
-            .tabs-container { flex-direction: column; }
+            .grid-2, .tabs-wrapper { display: block; }
             .tabs-nav, .tabs-content { width: 100%; }
-            .chart-layout { flex-direction: column; }
-            .hero-title { font-size: 2.5rem; }
+            .tabs-nav { 
+                display: flex; overflow-x: auto; padding: 15px; 
+                white-space: nowrap; border-bottom: 1px solid #EEE;
+            }
+            .tab-btn { border-left: none; border-bottom: 3px solid transparent; padding: 10px 20px; flex-shrink: 0; }
+            .tab-btn.active { border-left-color: transparent; border-bottom-color: var(--primary); box-shadow: none; background: transparent; }
+            .tabs-content { padding: 30px 20px; }
+
+            .hero-title { font-size: 2.2rem; }
+            .hero { text-align: center; padding: 120px 0 80px; } /* Уменьшил паддинг */
+            .hero-content { align-items: center; }
+            .hero-btns { justify-content: center; }
+
+            /* Адаптация меню: делаем его скроллящимся, чтобы не ломать верстку */
+            .nav-wrapper { flex-direction: column; gap: 15px; }
+            .nav-links { 
+                width: 100%; overflow-x: auto; padding-bottom: 10px; 
+                justify-content: flex-start; gap: 20px; 
+                -webkit-overflow-scrolling: touch; /* плавная прокрутка на iOS */
+            }
+            /* Скрываем скроллбар для красоты */
+            .nav-links::-webkit-scrollbar { display: none; }
+            
+            .logo span { display: none; } /* Скрываем "Проект..." на мобильных, чтобы не забивать место */
+            
+            .quiz-container { padding: 30px 20px; }
         }
     </style>
 </head>
@@ -364,193 +280,177 @@
     <header>
         <div class="container nav-wrapper">
             <a href="#" class="logo">
-                <div class="logo-icon">🌿</div>
-                AntiStress
+                🌿 Стоп,выгорание! <span>| Проект Виктории Мачновой</span>
             </a>
             <nav class="nav-links">
                 <a href="#passport">Проект</a>
-                <a href="#theory">Теория</a>
-                <a href="#practice">Практика</a>
-                <a href="#research">Опрос</a>
-                <a href="#resources">Ресурсы</a>
-                <a href="#practice" class="btn-main">Тест на стресс</a>
+                <a href="#navigator">Состояния</a>
+                <a href="#encyclopedia">База знаний</a>
+                <a href="#research">Исследование</a>
+                <a href="#quiz">Тест</a>
             </nav>
-            <div class="burger" onclick="toggleMenu()">☰</div>
         </div>
     </header>
 
     <section class="hero">
-        <div class="hero-circle circle-1"></div>
-        <div class="hero-circle circle-2"></div>
-        
+        <div class="hero-blob"></div>
         <div class="container hero-content">
-            <span class="hero-tag reveal">Проект 9Б класса</span>
+            <span class="tag reveal">Проект 9Б класса</span>
             <h1 class="hero-title reveal" style="transition-delay: 0.1s;">
                 Эмоциональное выгорание:<br>как не <span>сгореть</span>, пока учишься?
             </h1>
             <p class="hero-desc reveal" style="transition-delay: 0.2s;">
-                Практический гид по борьбе со стрессом. Спокойствие, планирование и забота о себе — вот наши главные инструменты.
+                Практическое пособие по сохранению ментального здоровья. 
+                Мы объединили науку, статистику и простые методики, чтобы помочь тебе пережить экзамены без стресса.
             </p>
             <div class="hero-btns reveal" style="transition-delay: 0.3s;">
-                <a href="#practice" class="btn-main">Найти решение</a>
-                <a href="#passport" class="btn-outline">О проекте</a>
+                <a href="#navigator" class="btn btn-sos">🆘 Мне плохо сейчас</a>
+                <a href="#practice" class="btn btn-primary">Начать практики</a>
             </div>
         </div>
     </section>
 
-    <section id="passport" class="bg-soft">
+    <section id="passport" class="bg-alt">
         <div class="container">
             <div class="section-header reveal">
-                <span class="section-tag">Основа</span>
+                <span class="tag">Фундамент</span>
                 <h2 class="section-title">Паспорт проекта</h2>
-                <p style="color: var(--text-light);">Исследовательская работа, переведенная на понятный язык.</p>
+                <p>База нашего исследования, подтверждающая серьезность подхода.</p>
             </div>
-
-            <div class="passport-grid">
-                <div class="info-card primary-b reveal">
-                    <h3>🎯 Цель</h3>
-                    <p style="color: var(--text-main); margin-bottom: 15px;">
-                        Разработать цифровой ресурс (этот сайт) и буклет для профилактики выгорания.
-                    </p>
-                    <ul class="passport-list">
-                        <li>Помощь подросткам</li>
-                        <li>Доступ 24/7</li>
-                        <li>Анонимность</li>
-                    </ul>
+            
+            <div class="grid-3">
+                <div class="card reveal">
+                    <div class="card-icon">🎯</div>
+                    <h3>Цель</h3>
+                    <p>Исследовать феномен СЭВ (Синдром эмоционального выгорания) у подростков и создать цифровую среду для его профилактики.</p>
                 </div>
-
-                <div class="info-card accent-b reveal" style="transition-delay: 0.1s;">
-                    <h3>🔥 Проблема</h3>
-                    <p style="color: var(--text-main); margin-bottom: 15px;">
-                        Подготовка к ОГЭ и школьные нагрузки создают критический уровень стресса.
-                    </p>
-                    <ul class="passport-list">
-                        <li>Давление окружающих</li>
-                        <li>Отсутствие отдыха</li>
-                        <li>Страх неудачи</li>
-                    </ul>
+                <div class="card reveal" style="transition-delay: 0.1s;">
+                    <div class="card-icon">📊</div>
+                    <h3>Актуальность</h3>
+                    <p>По статистике, уровень тревожности перед ОГЭ в 2026 году вырос на 15%. Подросткам нужен инструмент самопомощи, доступный 24/7.</p>
                 </div>
-
-                <div class="info-card secondary-b reveal" style="transition-delay: 0.2s;">
-                    <h3>📋 Задачи</h3>
-                    <p style="color: var(--text-main); margin-bottom: 15px;">
-                        Этапы реализации проекта за 4 месяца работы.
-                    </p>
-                    <ul class="passport-list">
-                        <li>Анализ литературы</li>
-                        <li>Школьный опрос</li>
-                        <li>Создание сайта</li>
-                    </ul>
+                <div class="card reveal" style="transition-delay: 0.2s;">
+                    <div class="card-icon">🛠️</div>
+                    <h3>Методы</h3>
+                    <p>Теоретический анализ литературы, социологический опрос (октябрь 2025), систематизация психологических практик.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="theory">
+    <section id="navigator">
         <div class="container">
             <div class="section-header reveal">
-                <span class="section-tag">Понимание</span>
-                <h2 class="section-title">Что происходит внутри?</h2>
-                <p style="color: var(--text-light);">Мы изучили теорию, чтобы объяснить ее простыми словами.</p>
+                <span class="tag">Скорая помощь</span>
+                <h2 class="section-title">Что ты чувствуешь сейчас?</h2>
+                <p>Выбери свое состояние, чтобы получить мгновенную рекомендацию.</p>
             </div>
 
-            <div class="tabs-container reveal">
+            <div class="grid-3 reveal">
+                <div class="nav-card" onclick="showSolution('panic', this)">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">😰</div>
+                    <h4>Я в панике</h4>
+                    <p style="font-size: 0.9rem;">Перед контрольной / экзаменом</p>
+                </div>
+                <div class="nav-card" onclick="showSolution('zombie', this)">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🧟</div>
+                    <h4>Я как зомби</h4>
+                    <p style="font-size: 0.9rem;">Апатия, ничего не хочется</p>
+                </div>
+                <div class="nav-card" onclick="showSolution('rage', this)">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🤬</div>
+                    <h4>Я на грани взрыва</h4>
+                    <p style="font-size: 0.9rem;">Всё и все раздражают</p>
+                </div>
+            </div>
+
+            <div id="sol-panic" class="solution-box">
+                <h3 style="color: var(--primary);">🚑 Техника «Заземление 5-4-3-2-1»</h3>
+                <p>Это упражнение «включает» префронтальную кору мозга и гасит панику.</p>
+                <ul style="margin-top: 15px; line-height: 2;">
+                    <li>👀 Найди глазами <strong>5</strong> предметов зеленого цвета.</li>
+                    <li>✋ Потрогай <strong>4</strong> разные текстуры (стол, одежда, волосы).</li>
+                    <li>👂 Услышь <strong>3</strong> звука (шум улицы, компьютер).</li>
+                    <li>👃 Почувствуй <strong>2</strong> запаха.</li>
+                    <li>👅 Ощути <strong>1</strong> вкус во рту.</li>
+                </ul>
+            </div>
+
+            <div id="sol-zombie" class="solution-box">
+                <h3 style="color: var(--accent);">🔋 Дофаминовый детокс</h3>
+                <p>Твой мозг перегружен дешевым дофамином из соцсетей. Ему скучно учиться.</p>
+                <ul style="margin-top: 15px; line-height: 2;">
+                    <li>1. Убери телефон в другую комнату на 1 час.</li>
+                    <li>2. Сделай 10 приседаний (физическая активность запускает энергию).</li>
+                    <li>3. Поставь таймер на 15 минут и просто начни делать самое простое задание.</li>
+                </ul>
+            </div>
+
+            <div id="sol-rage" class="solution-box">
+                <h3 style="color: #E57373;">🌬️ Квадратное дыхание</h3>
+                <p>Злость — это адреналин. Его нужно вывести через дыхание.</p>
+                <div style="background: #FFF5F5; padding: 20px; border-radius: 10px; margin-top: 15px;">
+                    <strong>Вдох (4 сек)</strong> ➝ <strong>Задержка (4 сек)</strong> ➝ <strong>Выдох (4 сек)</strong> ➝ <strong>Задержка (4 сек)</strong>.
+                    <br>Повтори 5 циклов.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="encyclopedia" class="bg-alt">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="tag">База знаний</span>
+                <h2 class="section-title">Анатомия выгорания</h2>
+                <p>Чтобы победить врага, нужно знать его в лицо.</p>
+            </div>
+
+            <div class="tabs-wrapper reveal">
                 <div class="tabs-nav">
-                    <button class="tab-btn active" onclick="openTab(event, 'tab1')">Что такое СЭВ?</button>
-                    <button class="tab-btn" onclick="openTab(event, 'tab2')">Симптомы</button>
-                    <button class="tab-btn" onclick="openTab(event, 'tab3')">Источники</button>
+                    <button class="tab-btn active" onclick="openTab(event, 't-definition')">Что такое СЭВ?</button>
+                    <button class="tab-btn" onclick="openTab(event, 't-bio')">Биология стресса</button>
+                    <button class="tab-btn" onclick="openTab(event, 't-stages')">5 стадий выгорания</button>
                 </div>
                 
                 <div class="tabs-content">
-                    <div id="tab1" class="tab-pane active">
-                        <h3 style="color: var(--primary); margin-bottom: 20px;">Синдром выгорания</h3>
-                        <p style="margin-bottom: 15px; font-size: 1.1rem;">
-                            Это состояние полного истощения — эмоционального, умственного и физического.
-                        </p>
-                        <p style="color: var(--text-light);">
-                            Важно отличать: обычная усталость проходит после выходных. Выгорание — нет. Оно вызывает безразличие (апатию) даже к любимым хобби.
-                        </p>
-                    </div>
-
-                    <div id="tab2" class="tab-pane">
-                        <h3 style="color: var(--primary); margin-bottom: 20px;">Тревожные сигналы</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div style="background: var(--bg-body); padding: 15px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 2rem;">😴</div>
-                                <strong>Хроническая усталость</strong>
+                    <div id="t-definition" class="tab-pane active">
+                        <h3 style="margin-bottom: 20px;">Это не просто усталость</h3>
+                        <p><strong>Синдром эмоционального выгорания (СЭВ)</strong> — это состояние физического и психического истощения, возникающее в ответ на эмоциональное перенапряжение.</p>
+                        <div style="margin-top: 30px; display: flex; gap: 30px;">
+                            <div style="flex:1; background: #F4F7F6; padding: 20px; border-radius: 12px;">
+                                <strong style="color: var(--primary);">Обычная усталость</strong>
+                                <p style="font-size: 0.9rem; margin-top: 10px;">Проходит после хорошего сна и выходных. Эмоции сохраняются, интерес к хобби есть.</p>
                             </div>
-                            <div style="background: var(--bg-body); padding: 15px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 2rem;">📉</div>
-                                <strong>Снижение оценок</strong>
-                            </div>
-                            <div style="background: var(--bg-body); padding: 15px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 2rem;">😠</div>
-                                <strong>Раздражительность</strong>
-                            </div>
-                            <div style="background: var(--bg-body); padding: 15px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 2rem;">😶</div>
-                                <strong>Желание закрыться</strong>
+                            <div style="flex:1; background: #FFF4E5; padding: 20px; border-radius: 12px;">
+                                <strong style="color: var(--accent);">Выгорание</strong>
+                                <p style="font-size: 0.9rem; margin-top: 10px;">Сон не помогает. Чувство "пустоты", цинизм, отвращение к учебе и привычным делам.</p>
                             </div>
                         </div>
                     </div>
 
-                    <div id="tab3" class="tab-pane">
-                        <h3 style="color: var(--primary); margin-bottom: 20px;">Откуда берется стресс?</h3>
-                        <ul style="list-style: none;">
-                            <li style="margin-bottom: 15px; padding: 10px; background: #F9FAFA; border-radius: 8px;">
-                                <strong>📚 Школа:</strong> Огромный объем ДЗ и страх перед экзаменами.
+                    <div id="t-bio" class="tab-pane">
+                        <h3 style="margin-bottom: 20px;">Гормональная буря</h3>
+                        <p>Когда ты боишься экзамена, твой мозг думает, что за тобой гонится тигр.</p>
+                        <ul style="margin-top: 20px;">
+                            <li style="margin-bottom: 15px;">
+                                <strong>💊 Кортизол (Гормон стресса):</strong> При хроническом стрессе он буквально «отключает» Гиппокамп — зону мозга, отвечающую за память. Поэтому перед экзаменом всё вылетает из головы.
                             </li>
-                            <li style="margin-bottom: 15px; padding: 10px; background: #F9FAFA; border-radius: 8px;">
-                                <strong>🏠 Семья:</strong> Конфликты и завышенные ожидания ("Ты должен быть лучшим").
-                            </li>
-                            <li style="padding: 10px; background: #F9FAFA; border-radius: 8px;">
-                                <strong>📱 Соцсети:</strong> Сравнение себя с "идеальными" блогерами.
+                            <li>
+                                <strong>⚡ Адреналин:</strong> Заставляет сердце биться чаще. Если его не «сжечь» (спортом), он перерастает в тревогу и бессонницу.
                             </li>
                         </ul>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section id="practice" class="bg-soft">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-tag">Действие</span>
-                <h2 class="section-title">Самодиагностика и помощь</h2>
-            </div>
-
-            <div class="quiz-wrapper reveal">
-                <h3 style="margin-bottom: 20px;">Твой уровень стресса</h3>
-                <div class="progress-line"><div class="progress-fill" id="p-bar"></div></div>
-                
-                <div id="quiz-content">
-                    <p id="q-text" style="font-size: 1.2rem; margin-bottom: 30px; font-weight: 700;">Загрузка вопроса...</p>
-                    <div id="q-options"></div>
-                </div>
-            </div>
-
-            <div class="tech-grid">
-                <div class="tech-card reveal">
-                    <div class="tech-icon">🌬️</div>
-                    <h4>Дыхание «4-7-8»</h4>
-                    <p style="color: var(--text-light); margin-top: 10px;">
-                        Вдох на 4, задержка на 7, выдох на 8. Успокаивает нервную систему за 2 минуты.
-                    </p>
-                </div>
-                <div class="tech-card reveal" style="transition-delay: 0.1s;">
-                    <div class="tech-icon">🍅</div>
-                    <h4>Метод Помодоро</h4>
-                    <p style="color: var(--text-light); margin-top: 10px;">
-                        25 минут учебы — 5 минут отдыха. Помогает мозгу не перегреваться.
-                    </p>
-                </div>
-                <div class="tech-card reveal" style="transition-delay: 0.2s;">
-                    <div class="tech-icon">📵</div>
-                    <h4>Цифровой детокс</h4>
-                    <p style="color: var(--text-light); margin-top: 10px;">
-                        Убирай телефон за час до сна. Свет экрана мешает выработке гормона сна.
-                    </p>
+                    <div id="t-stages" class="tab-pane">
+                        <h3 style="margin-bottom: 20px;">Путь в никуда: 5 стадий</h3>
+                        <ol style="margin-left: 20px; color: var(--text-main);">
+                            <li style="margin-bottom: 10px;"><strong>«Медовый месяц»:</strong> Ты полон энтузиазма, берешь кучу проектов, учишься ночами.</li>
+                            <li style="margin-bottom: 10px;"><strong>«Недостаток топлива»:</strong> Появляется усталость, начинаешь опаздывать, хуже спишь.</li>
+                            <li style="margin-bottom: 10px;"><strong>«Хронические симптомы»:</strong> Постоянная раздражительность, частые простуды (иммунитет падает).</li>
+                            <li style="margin-bottom: 10px;"><strong>«Кризис»:</strong> Развиваются болезни, работоспособность близка к нулю.</li>
+                            <li><strong>«Пробивание стены»:</strong> Полное истощение, опасное для жизни. Требуется помощь врача.</li>
+                        </ol>
+                    </div>
                 </div>
             </div>
         </div>
@@ -558,99 +458,169 @@
 
     <section id="research">
         <div class="container">
-            <div class="section-header reveal">
-                <span class="section-tag">Статистика</span>
-                <h2 class="section-title">Результаты опроса</h2>
-                <p style="color: var(--text-light);">Я опросила учеников нашей школы. Вот чего они боятся больше всего.</p>
-            </div>
-
-            <div class="chart-layout reveal">
-                <div style="flex: 1;">
-                    <h3 style="color: var(--primary); margin-bottom: 20px;">Главный враг — учеба</h3>
-                    <p style="margin-bottom: 20px;">
-                        Анкетирование (06.10–20.10) показало, что школа является основным источником стресса для большинства.
-                    </p>
-                    <ul style="margin-bottom: 20px;">
-                        <li style="margin-bottom: 10px;">🔴 <strong>75%</strong> — Учебная нагрузка</li>
-                        <li style="margin-bottom: 10px;">🟠 <strong>60%</strong> — Страх экзаменов</li>
-                    </ul>
-                    <div style="padding: 15px; background: var(--bg-secondary); border-radius: 8px; font-size: 0.9rem;">
-                        <strong>Вывод:</strong> Ты не один. Это системная проблема, и её можно решить режимом и отдыхом.
+            <div class="grid-2">
+                <div class="reveal">
+                    <span class="tag">Голос поколения</span>
+                    <h2 class="section-title">Результаты опроса</h2>
+                    <p>Я провела исследование среди учеников 8-9 классов (06.10 – 20.10). Цифры говорят сами за себя.</p>
+                    <div style="background: white; padding: 25px; border-radius: 16px; margin-top: 30px; box-shadow: var(--shadow-soft); border: 1px solid rgba(93, 138, 130, 0.2);">
+                        <strong style="color: var(--primary); display: block; margin-bottom: 10px;">💡 Главный инсайт:</strong>
+                        <p style="margin-bottom: 0;">Большинство школьников не знают методов саморегуляции, пытаясь просто "терпеть" стресс, что ведет к быстрому выгоранию.</p>
                     </div>
                 </div>
-
-                <div style="flex: 1; height: 300px; display: flex; align-items: flex-end; justify-content: space-around; border-bottom: 2px solid #EEE; padding-bottom: 10px;">
-                    <div style="width: 15%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;">
-                        <div class="bar" data-height="75%" style="background: #E07A5F;"></div>
-                        <div class="bar-label">Учеба</div>
+                
+                <div class="card reveal" style="padding: 50px;">
+                    <h3 style="margin-bottom: 30px;">Источники стресса</h3>
+                    
+                    <div class="stat-row">
+                        <div class="stat-meta"><span>Школа и ДЗ</span> <span>75%</span></div>
+                        <div class="stat-track"><div class="stat-bar" data-width="75%"></div></div>
                     </div>
-                    <div style="width: 15%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;">
-                        <div class="bar" data-height="60%" style="background: #F2CC8F;"></div>
-                        <div class="bar-label">ОГЭ</div>
+                    <div class="stat-row">
+                        <div class="stat-meta"><span>Страх ОГЭ/ЕГЭ</span> <span>60%</span></div>
+                        <div class="stat-track"><div class="stat-bar" data-width="60%" style="background: var(--accent);"></div></div>
                     </div>
-                    <div style="width: 15%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;">
-                        <div class="bar" data-height="40%" style="background: #81B29A;"></div>
-                        <div class="bar-label">Семья</div>
+                    <div class="stat-row">
+                        <div class="stat-meta"><span>Давление семьи</span> <span>40%</span></div>
+                        <div class="stat-track"><div class="stat-bar" data-width="40%" style="background: #E57373;"></div></div>
                     </div>
-                    <div style="width: 15%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;">
-                        <div class="bar" data-height="25%" style="background: #3D405B;"></div>
-                        <div class="bar-label">Соцсети</div>
+                    <div class="stat-row">
+                        <div class="stat-meta"><span>Социальные сети</span> <span>25%</span></div>
+                        <div class="stat-track"><div class="stat-bar" data-width="25%" style="background: var(--text-muted);"></div></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="resources" class="bg-soft">
+    <section id="practice" class="bg-alt">
         <div class="container">
             <div class="section-header reveal">
-                <span class="section-tag">Полезно</span>
-                <h2 class="section-title">Где найти помощь?</h2>
+                <span class="tag">Инструментарий</span>
+                <h2 class="section-title">Как учиться и жить?</h2>
+                <p>Методики, которые используют топ-менеджеры, адаптированные для школы.</p>
             </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-                <a href="https://telefon-doveria.ru" target="_blank" class="info-card reveal">
-                    <h4 style="color: var(--primary);">📞 Телефон доверия</h4>
-                    <p style="font-size: 0.9rem; margin-top: 10px;">8-800-2000-122 (Анонимно)</p>
-                </a>
-                <a href="https://fipi.ru" target="_blank" class="info-card reveal" style="transition-delay: 0.1s;">
-                    <h4 style="color: var(--primary);">📚 ФИПИ</h4>
-                    <p style="font-size: 0.9rem; margin-top: 10px;">Вся правда об экзаменах</p>
-                </a>
-                <a href="https://travli24.net" target="_blank" class="info-card reveal" style="transition-delay: 0.2s;">
-                    <h4 style="color: var(--primary);">🛡️ Травли.NET</h4>
-                    <p style="font-size: 0.9rem; margin-top: 10px;">Помощь при буллинге</p>
-                </a>
+
+            <div class="grid-3">
+                <div class="card reveal">
+                    <h3>🍅 Метод Pomodoro</h3>
+                    <p>Твой мозг не может фокусироваться вечно.
+                    <br><strong>Схема:</strong> 25 мин учебы + 5 мин отдыха.
+                    <br>После 4-х циклов — большой отдых 30 мин.</p>
+                </div>
+                <div class="card reveal" style="transition-delay: 0.1s;">
+                    <h3>📊 Матрица Эйзенхауэра</h3>
+                    <p>Не делай всё подряд. Раздели задачи:
+                    <br>1. <strong>Важно и Срочно:</strong> Горит (делай сейчас).
+                    <br>2. <strong>Важно, не Срочно:</strong> Подготовка к ОГЭ (планируй).</p>
+                </div>
+                <div class="card reveal" style="transition-delay: 0.2s;">
+                    <h3>📵 Цифровая гигиена</h3>
+                    <p>Синий свет экрана блокирует мелатонин (гормон сна).
+                    <br><strong>Правило:</strong> Гаджеты в сторону за 1 час до сна. Читай книгу.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="social">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="tag">Поддержка</span>
+                <h2 class="section-title">Ты не один</h2>
+            </div>
+            <div class="grid-2">
+                <div class="card reveal" style="border-left: 5px solid var(--accent);">
+                    <h3>👨‍👩‍👧 Для родителей</h3>
+                    <ul style="margin-top: 15px;">
+                        <li>❌ Не спрашивайте с порога: "Что получил?"</li>
+                        <li>✅ Спросите: "Как ты себя чувствуешь? Ты устал?"</li>
+                        <li>✅ Обеспечьте ребенку "день без учебы" раз в неделю.</li>
+                        <li>✅ Не сравнивайте его с сыном маминой подруги.</li>
+                    </ul>
+                </div>
+                <div class="card reveal" style="border-left: 5px solid var(--primary);">
+                    <h3>🤝 Для друзей</h3>
+                    <ul style="margin-top: 15px;">
+                        <li>⚠️ Если друг стал замкнутым и агрессивным — это крик о помощи.</li>
+                        <li>✅ Не говори: "Просто забей".</li>
+                        <li>✅ Предложи: "Давай прогуляемся без телефонов" или "Хочешь, я помогу тебе с этой темой?"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="quiz">
+        <div class="container">
+            <div class="quiz-container reveal">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <span class="tag">Самодиагностика</span>
+                    <h2>Уровень выгорания</h2>
+                    <p>Честный ответ — первый шаг к решению. (Методика на основе опросника Маслач)</p>
+                </div>
+
+                <div class="progress-container"><div class="progress-fill" id="p-bar"></div></div>
+                
+                <div id="quiz-body">
+                    <h3 id="q-text" style="font-size: 1.4rem; margin-bottom: 30px; text-align: center;">...</h3>
+                    <div id="q-options"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="qrcode-section" class="bg-alt" style="text-align: center;">
+        <div class="container reveal">
+            <h2 class="section-title">Открыть на телефоне</h2>
+            <p>Наведи камеру, чтобы посмотреть проект в мобильной версии</p>
+            <div class="qr-block">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://pronextdesignwork.github.io/MachnovaProject2025/&color=5D8A82" alt="QR Code" width="200" height="200">
+                <p style="margin-top: 15px; font-size: 0.8rem; margin-bottom: 0;">https://pronextdesignwork.github.io/MachnovaProject2025/</p>
             </div>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            <div class="footer-cta reveal">
-                <h2 style="margin-bottom: 15px;">Скачай памятку</h2>
-                <p style="margin-bottom: 25px; opacity: 0.9;">Краткая выжимка всех методик в одном PDF файле.</p>
-                <a href="#" style="background: white; color: var(--primary); padding: 12px 30px; border-radius: 50px; font-weight: 700;">📥 Скачать буклет</a>
+            <div class="grid-3" style="align-items: start;">
+                <div class="footer-col">
+                    <a href="#" class="logo" style="color: white; margin-bottom: 20px;">🌿 Стоп,выгорание!</a>
+                    <p style="color: #A0AEC0;">Проект ученицы 9Б класса<br>Мачновой Виктории.<br>МБОУ «Змеиногорская СОШ с УИОП»</p>
+                    <a href="https://drive.google.com/uc?export=download&id=1mIPIA5_BRlJVb_7TyNTDmapQ35doCfkJ" 
+   class="btn btn-primary" 
+   style="margin-top: 20px;" 
+   target="_blank">📥 Скачать буклет (PDF)</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Полезные ресурсы</h4>
+                    <a href="https://telefon-doveria.ru" target="_blank" class="footer-link">Детский телефон доверия</a>
+                    <a href="https://fipi.ru" target="_blank" class="footer-link">Сайт ФИПИ (ОГЭ)</a>
+                    <a href="#" class="footer-link">Книга: «Стресс и подросток»</a>
+                    <a href="#" class="footer-link">Приложение: Meditopia</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Контакты</h4>
+                    <p style="color: #A0AEC0;">Руководитель проекта:<br>Ельцова Елена Владимировна</p>
+                    <p style="color: #A0AEC0; margin-top: 15px;">2026 год</p>
+                </div>
             </div>
-
-            <div style="color: #8D99AE; font-size: 0.9rem;">
-                <p>Выполнила: <span style="color: white;">Мачнова Виктория (9Б)</span></p>
-                <p>Руководитель: <span style="color: white;">Ельцова Е.В.</span></p>
-                <p style="margin-top: 20px;">МБОУ «Змеиногорская СОШ», 2026</p>
+            <div class="footer-bottom">
+                &copy; 2026 Все права защищены. Сайт разработан для защиты исследовательского проекта.
             </div>
         </div>
     </footer>
 
     <script>
-        // 1. Анимации при скролле
+        // 1. Анимации при скролле (Observer)
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    // Анимация графиков
-                    if(entry.target.classList.contains('chart-layout')) {
-                        document.querySelectorAll('.bar').forEach(bar => {
-                            bar.style.height = bar.getAttribute('data-height');
+                    // Запуск графиков
+                    if(entry.target.querySelector('.stat-bar')) {
+                        entry.target.querySelectorAll('.stat-bar').forEach(bar => {
+                            bar.style.width = bar.getAttribute('data-width');
                         });
                     }
                 }
@@ -659,75 +629,100 @@
 
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // 2. Вкладки
+        // 2. Логика Навигатора состояний
+        function showSolution(type, cardEl) {
+            // Сброс активных классов
+            document.querySelectorAll('.nav-card').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.solution-box').forEach(el => el.style.display = 'none');
+            
+            // Активация
+            cardEl.classList.add('active');
+            const solBox = document.getElementById('sol-' + type);
+            solBox.style.display = 'block';
+        }
+
+        // 3. Табы
         function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
+            let i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tab-pane");
             for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
                 tabcontent[i].classList.remove("active");
             }
             tablinks = document.getElementsByClassName("tab-btn");
             for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
+                tablinks[i].classList.remove("active");
             }
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.className += " active";
+            const activeTab = document.getElementById(tabName);
+            activeTab.style.display = "block";
+            setTimeout(() => activeTab.classList.add("active"), 10);
+            evt.currentTarget.classList.add("active");
         }
 
-        // 3. Меню
-        function toggleMenu() {
-            document.querySelector('.nav-links').classList.toggle('active');
-        }
-
-        // 4. Тест (Логика)
+        // 4. Тест (8 вопросов)
         const questions = [
-            { q: "Как ты чувствуешь себя утром?", a: ["Уставшим", "Нормально", "Бодрым"] },
-            { q: "Легко ли тебе учиться?", a: ["Очень тяжело", "С переменным успехом", "Легко"] },
-            { q: "Как настроение?", a: ["Раздражает всё", "Бывает грустно", "Отличное"] },
-            { q: "Спишь хорошо?", a: ["Бессонница", "Иногда просыпаюсь", "Сплю как сурок"] }
+            { t: "Чувствуешь ли ты усталость сразу после пробуждения?", w: 2 },
+            { t: "Часто ли ты злишься на окружающих без видимой причины?", w: 2 },
+            { t: "Бывает ли чувство, что твоя учеба бессмысленна?", w: 3 }, // Цинизм - сильный маркер
+            { t: "Стало ли сложнее запоминать простую информацию?", w: 2 },
+            { t: "Нарушился ли твой сон (бессонница или сонливость)?", w: 2 },
+            { t: "Часто ли болит голова или живот перед школой?", w: 2 }, // Психосоматика
+            { t: "Отказался(ась) ли ты от хобби из-за нехватки сил?", w: 1 },
+            { t: "Считаешь ли ты, что не сдашь экзамены, несмотря на подготовку?", w: 2 }
         ];
 
-        let currentQ = 0;
-        let score = 0;
-        const qText = document.getElementById('q-text');
-        const qOptions = document.getElementById('q-options');
-        const pBar = document.getElementById('p-bar');
+        let qIndex = 0;
+        let totalScore = 0;
+        const maxScore = 16; // Сумма всех весов * 1 (если ответ Да)
 
         function loadQuiz() {
-            if (currentQ >= questions.length) {
-                showResult();
+            if (qIndex >= questions.length) {
+                finishQuiz();
                 return;
             }
-            const item = questions[currentQ];
-            qText.innerText = item.q;
-            qOptions.innerHTML = '';
-            pBar.style.width = ((currentQ) / questions.length) * 100 + '%';
-
-            item.a.forEach((ans, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'quiz-btn';
-                btn.innerText = ans;
-                btn.onclick = () => {
-                    score += (2 - idx);
-                    currentQ++;
-                    loadQuiz();
-                };
-                qOptions.appendChild(btn);
-            });
-        }
-
-        function showResult() {
-            pBar.style.width = '100%';
-            let msg = score >= 6 ? "⚠️ Высокий уровень стресса. Тебе нужен отдых!" : "✅ Всё в норме. Так держать!";
-            let color = score >= 6 ? "#E07A5F" : "#81B29A";
+            const q = questions[qIndex];
+            document.getElementById('p-bar').style.width = ((qIndex / questions.length) * 100) + '%';
+            document.getElementById('q-text').innerText = q.t;
             
-            document.getElementById('quiz-content').innerHTML = `
-                <h3 style="color: ${color}; font-size: 1.5rem; margin-bottom: 15px;">Результат</h3>
-                <p style="font-size: 1.1rem;">${msg}</p>
-                <button class="btn-main" onclick="location.reload()" style="margin-top:20px;">Заново</button>
+            document.getElementById('q-options').innerHTML = `
+                <button class="quiz-option" onclick="nextQ(${q.w})">Да, часто / постоянно</button>
+                <button class="quiz-option" onclick="nextQ(${q.w * 0.5})">Иногда</button>
+                <button class="quiz-option" onclick="nextQ(0)">Нет, редко или никогда</button>
             `;
         }
 
+        function nextQ(points) {
+            totalScore += points;
+            qIndex++;
+            loadQuiz();
+        }
+
+        function finishQuiz() {
+            document.getElementById('p-bar').style.width = '100%';
+            let title, msg, color;
+
+            if (totalScore >= 10) {
+                title = "🛑 Высокая стадия выгорания";
+                msg = "Твои ресурсы истощены. Симптомы указывают на серьезный стресс. Тебе срочно нужен полноценный отдых (минимум 2-3 дня без учебы) и разговор с родителями/психологом.";
+                color = "#E57373";
+            } else if (totalScore >= 5) {
+                title = "⚠️ Средний уровень напряжения";
+                msg = "Ты устал, и продуктивность падает. Введи режим дня, используй технику Pomodoro и обязательно высыпайся.";
+                color = "#FFB74D";
+            } else {
+                title = "✅ Ты в ресурсе!";
+                msg = "У тебя здоровая реакция на нагрузку. Продолжай соблюдать баланс, и экзамены тебе не страшны.";
+                color = "#5D8A82";
+            }
+
+            document.getElementById('quiz-body').innerHTML = `
+                <h2 style="color: ${color}; margin-bottom: 20px;">${title}</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 30px;">${msg}</p>
+                <button class="btn btn-primary" onclick="location.reload()">Пройти заново</button>
+            `;
+        }
+
+        // Запуск
         loadQuiz();
     </script>
 </body>
